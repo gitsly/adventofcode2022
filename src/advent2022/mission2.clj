@@ -23,4 +23,20 @@
             \Y :paper
             \Z :scissors } opp)}))
 
-(map parse-input (utils/get-lines  "resources/2_input.txt"))
+
+(def data
+  (map parse-input (utils/get-lines  "resources/2_input.txt")))
+
+(def rules {{:scissors :rock}       :loose
+            {:scissors :paper}      :win
+            {:scissors :scissors}   :tie
+            {:paper :rock}          :win
+            {:paper :paper}         :tie
+            {:paper :scissors}      :loose
+            {:rock :rock}           :tie
+            {:rock :paper}          :loose
+            {:rock :scissors}       :win})
+
+(let [setup (first data)
+      res {(:self setup) (:opp setup)}]
+  (-> res rules))
