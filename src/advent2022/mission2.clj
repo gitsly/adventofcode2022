@@ -9,16 +9,19 @@
    Self : A for Rock, B for Paper, and C for Scissors"
   [line]
   (let [[opp _ self] line]
-    {:self ({\A :rock
-             \B :paper
-             \C :scissors } self)
-     :opp ({\X :rock
-            \Y :paper
-            \Z :scissors } opp)}))
+    {:opp ({\A :rock
+            \B :paper
+            \C :scissors } opp)
+     :self ({\X :rock
+             \Y :paper
+             \Z :scissors } self)}
+    ))
 
 
-(def matches)
-(map parse-input (utils/get-lines  "resources/2_input.txt"))
+
+(def matches
+  (map parse-input (utils/get-lines  "resources/2_input.txt")))
+
 
 (def rules {{:scissors :rock}       :loose
             {:scissors :paper}      :win
