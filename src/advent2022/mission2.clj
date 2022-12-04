@@ -18,10 +18,6 @@
     ))
 
 
-
-(def matches
-  (map parse-input (utils/get-lines  "resources/2_input.txt")))
-
 (def rules {{:scissors :rock}       :loose
             {:scissors :paper}      :win
             {:scissors :scissors}   :tie
@@ -48,10 +44,10 @@
     {:result result
      :score (+ (score result)
                ;; Add score for 'shape' only if winning
-               (if (= :win result)
-                 (score self)
-                 0))}))
-(count matches)
+               (score self))}))
 
-
-(map resolve-round matches)
+;; This is the solution
+(->> (map parse-input (utils/get-lines "resources/2_input.txt"))
+     (map resolve-round)
+     (map :score)
+     (reduce +))
