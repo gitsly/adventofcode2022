@@ -47,7 +47,7 @@
                (score self))}))
 
 ;; This is the solution
-(->> (map parse-input (utils/get-lines "resources/2_input.txt"))
+(->> (map parse-input (utils/get-lines "resources/2_input_live.txt"))
      (map resolve-round)
      (map :score)
      (reduce +))
