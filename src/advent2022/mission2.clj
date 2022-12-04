@@ -15,18 +15,12 @@
   "Self : X for Rock, Y for Paper, and Z for Scissors
    Self : A for Rock, B for Paper, and C for Scissors"
   [line]
-  line)
-
-
-(let [d "A Z"
-      [self _ opp] d]
-  {:self ({\A :rock
-           \B :paper
-           \C :scissors } self)
-   :opp ({\X :rock
-          \Y :paper
-          \Z :scissors } opp)})
-
-
+  (let [[self _ opp] line]
+    {:self ({\A :rock
+             \B :paper
+             \C :scissors } self)
+     :opp ({\X :rock
+            \Y :paper
+            \Z :scissors } opp)}))
 
 (map parse-input (utils/get-lines  "resources/2_input.txt"))
