@@ -4,9 +4,6 @@
             [clojure.set :as set])
   (:gen-class))
 
-                                        ; In how many assignment pairs does one range fully contain the other?
-
-(re-matches #"(hello)" "hello")
 
 (defn section-range
   [from to]
@@ -21,8 +18,22 @@
     {:a (section-range a1 a2)
      :b (section-range b1 b2) }))
 
+(defn max-count
+  [a b]
+  (if (> (count a) (count b))
+    a
+    b))
 
-(map parse-line (utils/get-lines "resources/4_input.txt"))
 
-;; full-overlap
-()
+(defn fully-contains
+  [a b]
+  (=
+   (into (hash-set) (set/union a b))
+   (into (hash-set) (max-count a b))))
+
+;; In how many assignment pairs does one range fully contain the other?
+(map #(fully-contains (:a %) (:b %))
+     (->>
+      (utils/get-lines "resources/4_input.txt")
+      (map parse-line)))
+
