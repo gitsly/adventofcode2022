@@ -3,19 +3,12 @@
             [utils.utils :as utils])
   (:gen-class))
 
-(defn get-elf-max-calories[col]
-  (->> col
-       (partition-by nil?)
-       (remove #(= % '(nil)))
-       (map #(reduce + %))
-       sort
-       last))
 
 (defn parse-input
   "Self : X for Rock, Y for Paper, and Z for Scissors
    Self : A for Rock, B for Paper, and C for Scissors"
   [line]
-  (let [[self _ opp] line]
+  (let [[opp _ self] line]
     {:self ({\A :rock
              \B :paper
              \C :scissors } self)
@@ -24,8 +17,8 @@
             \Z :scissors } opp)}))
 
 
-(def data
-  (map parse-input (utils/get-lines  "resources/2_input.txt")))
+(def matches)
+(map parse-input (utils/get-lines  "resources/2_input.txt"))
 
 (def rules {{:scissors :rock}       :loose
             {:scissors :paper}      :win
@@ -37,6 +30,9 @@
             {:rock :paper}          :loose
             {:rock :scissors}       :win})
 
-(let [setup (first data)
-      res {(:self setup) (:opp setup)}]
-  (-> res rules))
+(let [round (first matches)
+      self (:self round)
+      opp (:opp round)
+      result (-> { self opp } rules)]
+  (println "Self: " self ", Opp: " opp ", Result: " result)
+  result)
