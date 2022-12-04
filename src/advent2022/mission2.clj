@@ -22,7 +22,6 @@
 (def matches
   (map parse-input (utils/get-lines  "resources/2_input.txt")))
 
-
 (def rules {{:scissors :rock}       :loose
             {:scissors :paper}      :win
             {:scissors :scissors}   :tie
@@ -33,9 +32,26 @@
             {:rock :paper}          :loose
             {:rock :scissors}       :win})
 
-(let [round (first matches)
-      self (:self round)
-      opp (:opp round)
-      result (-> { self opp } rules)]
-  (println "Self: " self ", Opp: " opp ", Result: " result)
-  result)
+(def score {:loose 0
+            :tie 3
+            :win 6
+            :rock 1
+            :paper 2
+            :scissors 3 })
+
+(defn resolve-round
+  [round]
+  (let [self (:self round)
+        opp (:opp round)
+        result (-> { self opp } rules)]
+    (println "Self: " self ", Opp: " opp ", Result: " result)
+    {:result result
+     :score (+ (score result)
+               ;; Add score for 'shape' only if winning
+               (if (= :win result)
+                 (score self)
+                 0))}))
+(count matches)
+
+
+(map resolve-round matches)
