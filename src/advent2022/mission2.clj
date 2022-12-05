@@ -1,6 +1,7 @@
 (ns advent2022.mission2
   (:require [clojure.java.io :as io]
-            [utils.utils :as utils])
+            [utils.utils :as utils]
+            [clojure.set :as set])
   (:gen-class))
 
 
@@ -14,8 +15,15 @@
             \C :scissors } opp)
      :self ({\X :rock
              \Y :paper
-             \Z :scissors } self)}
+             \Z :scissors } self)
+     :need ({\X :loose
+             \Y :draw
+             \Z :win } self)}
     ))
+;; X means you need to lose,
+;; Y means you need to end the round in a draw, and
+;; Z means you need to win.
+
 
 
 (def rules {{:scissors :rock}       :loose
@@ -35,6 +43,10 @@
             :paper 2
             :scissors 3 })
 
+(set/map-invert rules)
+
+(def need-to {})
+
 (defn resolve-round
   [round]
   (let [self (:self round)
@@ -46,8 +58,13 @@
                ;; Add score for 'shape' only if winning
                (score self))}))
 
+
+(:need (parse-input "A Y"))
+(:need (parse-input "B X"))
+(:need (parse-input "C Z"))
+
 ;; This is the solution
-(->> (map parse-input (utils/get-lines "resources/2_input_live.txt"))
+(->> (map parse-input (utils/get-lines "resources/2_input.txt"))
      (map resolve-round)
      (map :score)
      (reduce +))
