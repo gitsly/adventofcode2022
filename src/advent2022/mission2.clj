@@ -16,7 +16,7 @@
      :self ({\X :rock
              \Y :paper
              \Z :scissors } self)
-     :need ({\X :loose
+     :need ({\X :lose
              \Y :draw
              \Z :win } self)}
     ))
@@ -26,30 +26,40 @@
 
 
 
-(def rules {{:scissors :rock}       :loose
+(def rules {{:scissors :rock}       :lose
             {:scissors :paper}      :win
-            {:scissors :scissors}   :tie
+            {:scissors :scissors}   :draw
             {:paper :rock}          :win
-            {:paper :paper}         :tie
-            {:paper :scissors}      :loose
-            {:rock :rock}           :tie
-            {:rock :paper}          :loose
+            {:paper :paper}         :draw
+            {:paper :scissors}      :lose
+            {:rock :rock}           :draw
+            {:rock :paper}          :lose
             {:rock :scissors}       :win})
 
-(def score {:loose 0
-            :tie 3
+(def score {:lose 0
+            :draw 3
             :win 6
             :rock 1
             :paper 2
             :scissors 3 })
 
-(set/map-invert rules)
+(defn target-self
+  "Used when self choice needs to target :need"
+  [round]
+  (let [need (:need round)]
+    (need
+     (set/map-invert rules) ; need to have double mapping.. eg. many lose
+     )))
 
-(def need-to {})
+;; Goal: reverse the rules map, by making a submap for each :need with
+;; opponents choice, and what needs to be done by self to meet :need
+(reduce (fn [sum, item] (conj sum item))
+        (map vector (vals rules) (keys rules)))
 
 (defn resolve-round
   [round]
-  (let [self (:self round)
+  (let [;self (:self round)
+        self (target-self round)
         opp (:opp round)
         result (-> { self opp } rules)]
     (println "Self: " self ", Opp: " opp ", Result: " result)
@@ -58,13 +68,13 @@
                ;; Add score for 'shape' only if winning
                (score self))}))
 
+(set/map-invert rules)
 
-(:need (parse-input "A Y"))
-(:need (parse-input "B X"))
-(:need (parse-input "C Z"))
+(->> (map parse-input (utils/get-lines "resources/2_input.txt"))
+(map target-self) )
 
 ;; This is the solution
 (->> (map parse-input (utils/get-lines "resources/2_input.txt"))
-     (map resolve-round)
-     (map :score)
-     (reduce +))
+(map resolve-round)
+(map :score)
+(reduce +))
