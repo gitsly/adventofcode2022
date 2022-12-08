@@ -32,8 +32,12 @@
    (into (hash-set) (max-count a b))))
 
 ;; In how many assignment pairs does one range fully contain the other?
-(map #(fully-contains (:a %) (:b %))
-     (->>
-      (utils/get-lines "resources/4_input.txt")
-      (map parse-line)))
+(->>
+ (map #(fully-contains (:a %) (:b %))
+      (->>
+       (utils/get-lines "resources/4_input.txt")
+       (map parse-line)))
+ 
+ (filter #(= % true))
+ count)
 

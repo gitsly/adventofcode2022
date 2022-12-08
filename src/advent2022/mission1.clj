@@ -14,7 +14,11 @@
        (remove #(= % '(nil)))
        (map #(reduce + %))
        sort
-       last))
+       reverse))
 
-(get-elf-max-calories 
- (map utils/as-integer (utils/get-lines  "resources/1_input.txt")))
+(take 3 [1 2 3 4])
+
+(reduce + 
+        (take 3
+              (get-elf-max-calories 
+               (map utils/as-integer (utils/get-lines  "resources/1_input.txt")))))

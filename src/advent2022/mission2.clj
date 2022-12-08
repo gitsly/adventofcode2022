@@ -26,7 +26,9 @@
 
 
 
-(def rules {{:scissors :rock}       :lose
+(def rules {
+            ;; slef     Opponent
+            {:scissors :rock}       :lose
             {:scissors :paper}      :win
             {:scissors :scissors}   :draw
             {:paper :rock}          :win
@@ -35,6 +37,18 @@
             {:rock :rock}           :draw
             {:rock :paper}          :lose
             {:rock :scissors}       :win})
+
+;; TODO: figure this one out programmatically
+;; { need, opponent -> what to select}
+(def rules-inv {{:lose :rock}       :scissors
+                {:win  :paper}      :scissors
+                {:draw :scissors}   :scissors
+                {:win  :rock}       :paper
+                {:draw :paper}      :paper
+                {:lose :scissors}   :paper
+                {:draw :rock}       :rock
+                {:lose :paper}      :rock
+                {:win  :scissors}   :rock})
 
 (def score {:lose 0
             :draw 3
@@ -46,20 +60,27 @@
 (defn target-self
   "Used when self choice needs to target :need"
   [round]
-  (let [need (:need round)]
-    (need
-     (set/map-invert rules) ; need to have double mapping.. eg. many lose
-     )))
+  (let [need (:need round)
+        opp (:opp round)]
+    (rules-inv { need opp })))
+
+;;(target-self {:opp :rock, :self :paper, :need :draw})
+
 
 ;; Goal: reverse the rules map, by making a submap for each :need with
 ;; opponents choice, and what needs to be done by self to meet :need
-(reduce (fn [sum, item] (conj sum item))
-        (map vector (vals rules) (keys rules)))
+;;(def rules {'a :lose
+;;            'b :lose
+;;            'c :win
+;;            'd :win})
+;;(reduce (fn [sum, item] (merge sum item))
+;;        (map vector (vals rules) (keys rules)))
 
 (defn resolve-round
   [round]
-  (let [;self (:self round)
-        self (target-self round)
+  (let [
+        ;;self (:self round) ; Part 1
+        self (target-self round) ; Part 2 
         opp (:opp round)
         result (-> { self opp } rules)]
     (println "Self: " self ", Opp: " opp ", Result: " result)
@@ -68,13 +89,15 @@
                ;; Add score for 'shape' only if winning
                (score self))}))
 
-(set/map-invert rules)
+;;(set/map-invert rules)
+
+
 
 (->> (map parse-input (utils/get-lines "resources/2_input.txt"))
-(map target-self) )
+     map target-self))
 
 ;; This is the solution
 (->> (map parse-input (utils/get-lines "resources/2_input.txt"))
-(map resolve-round)
-(map :score)
-(reduce +))
+     (map resolve-round)
+     (map :score)
+     (reduce +))
