@@ -50,12 +50,19 @@
                 {:lose :paper}      :rock
                 {:win  :scissors}   :rock})
 
+;; Attempt destructuring to do the 'inversion'
+(let [f (first rules)
+      [{:a :b} :c] f]
+  a)
+
+
 (def score {:lose 0
             :draw 3
             :win 6
             :rock 1
             :paper 2
             :scissors 3 })
+
 
 (defn target-self
   "Used when self choice needs to target :need"
@@ -89,17 +96,14 @@
 
 ;;(resolve-round :self {:opp :rock, :self :paper, :need :draw})
 
-(->> (map parse-input (utils/get-lines "resources/2_input.txt"))
-     (map target-self))
-
 ;; Part1
-(->> (map parse-input (utils/get-lines "resources/2_input.txt"))
+(->> (map parse-input (utils/get-lines "resources/2_input_live.txt"))
      (map #(resolve-round :self %))
      (map :score)
      (reduce +))
 
 ;; Part2
-(->> (map parse-input (utils/get-lines "resources/2_input.txt"))
+(->> (map parse-input (utils/get-lines "resources/2_input_live.txt"))
      (map #(resolve-round target-self %))
      (map :score)
      (reduce +))
