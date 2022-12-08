@@ -64,7 +64,6 @@
         opp (:opp round)]
     (rules-inv { need opp })))
 
-;;(target-self {:opp :rock, :self :paper, :need :draw})
 
 
 ;; Goal: reverse the rules map, by making a submap for each :need with
@@ -77,27 +76,30 @@
 ;;        (map vector (vals rules) (keys rules)))
 
 (defn resolve-round
-  [round]
+  [self-fn ; function that takes rount as argument, and returns what to select against opponent
+   round]
   (let [
-        ;;self (:self round) ; Part 1
-        self (target-self round) ; Part 2 
+        self (self-fn round)
         opp (:opp round)
         result (-> { self opp } rules)]
     (println "Self: " self ", Opp: " opp ", Result: " result)
     {:result result
      :score (+ (score result)
-               ;; Add score for 'shape' only if winning
                (score self))}))
 
-;;(set/map-invert rules)
-
-
+;;(resolve-round :self {:opp :rock, :self :paper, :need :draw})
 
 (->> (map parse-input (utils/get-lines "resources/2_input.txt"))
-     map target-self))
+     (map target-self))
 
-;; This is the solution
+;; Part1
 (->> (map parse-input (utils/get-lines "resources/2_input.txt"))
-     (map resolve-round)
+     (map #(resolve-round :self %))
+     (map :score)
+     (reduce +))
+
+;; Part2
+(->> (map parse-input (utils/get-lines "resources/2_input.txt"))
+     (map #(resolve-round target-self %))
      (map :score)
      (reduce +))
