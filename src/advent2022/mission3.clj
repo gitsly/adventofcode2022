@@ -28,5 +28,12 @@
      (map prio)
      (reduce +))
 
+;; Part2 
+(->> (utils/get-lines "resources/3_input.txt")
+     ;;     (map parse-line)
+     (partition 3) )
+
+
+
 ;; Every item type is identified by a single lowercase or uppercase
 ;; letter (that is, a and A refer to different types of items).
