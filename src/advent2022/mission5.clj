@@ -32,16 +32,6 @@
      :from (utils/as-integer from)
      :to (utils/as-integer to) }))
 
-;; Split up the data in different categories
-(defn parse-data
-  [file]
-  (let [all-lines (utils/get-lines file)
-        crate-lines (take-while #(not (string/includes? % "1")) all-lines)
-        move-lines (drop (+ 2 (count crate-lines)) all-lines)]
-    {:crates (map parse-crate-line crate-lines)
-     :moves (map parse-move-line move-lines)}))
-
-
 (defn prepare-crate-data
   "Creates stack (list) for each stack of boxes (from a set of crate data lines)"
   [crates]
@@ -50,18 +40,33 @@
     (map #(nth % x) crates)
     ))
 
+;; Split up the data in different categories
+(defn parse-data
+  [file]
+  (let [all-lines (utils/get-lines file)
+        crate-lines (take-while #(not (string/includes? % "1")) all-lines)
+        move-lines (drop (+ 2 (count crate-lines)) all-lines)
+        filter-space (fn[coll] (filter #(not (= \space %)) coll))]
+    {:crates (->> crate-lines
+                  (map parse-crate-line)
+                  prepare-crate-data
+                  (map filter-space))
+     :moves (map parse-move-line move-lines)}))
 
-(filter #(not (= \space %)) (first 
-                             (->> (parse-data "resources/5_input.txt")
-                                  :crates
-                                  prepare-crate-data) )) 
+
+(parse-data "resources/5_input.txt")
 
 
-(let [crate-data (->> (parse-data "resources/5_input.txt")
-                      :crates
-                      prepare-crate-data)
-      filter-fn (fn[coll] (filter #(not (= \space %)) coll))]
-  (map filter-fn crate-data))
+
+(defn move
+  "Takes a move and crate state as input and returns new crate state"
+  [move
+   crate-data]
+
+  crate-data)
+
+
+(move crate-data (first))
 
 
 ;; Testing
