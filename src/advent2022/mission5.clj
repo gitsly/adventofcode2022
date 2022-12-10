@@ -42,12 +42,15 @@
         crate-lines (take-while #(not (string/includes? % "1")) all-lines)
         move-lines (drop (+ 2 (count crate-lines)) all-lines)]
     {:crates (map parse-crate-line crate-lines)
-     :moves (map parse-crate-line move-lines)}))
+     :moves (map parse-move-line move-lines)}))
 
-(parse-data "resources/5_input.txt")
+(->> (parse-data "resources/5_input.txt")
+     (:crates)
+     (map #(nth % 0)))
+                                        ; for.
+(map #(list (nth % 0)))
+;; (map #(conj [] (nth % 0)))
 
 
-(let [all-lines (utils/get-lines "resources/5_input.txt")]
-  (take (dec (count all-lines)) all-lines))
 
 
