@@ -23,19 +23,28 @@
        parse-crate-line-step1
        reverse))
 
-;; (parse-crate-line "    [D]    ")
+
+(defn parse-move-line
+  [input]
+  (let [matches (re-matches #"move (\d+) from (\d+) to (\d+)", input)
+        [_ cnt from to] matches]
+    {:cnt (utils/as-integer cnt)
+     :from (utils/as-integer from)
+     :to (utils/as-integer to) }))
+
+(parse-crate-line "    [D]    ")
 (parse-crate-line "[Z] [M] [P]")
-
-
+(parse-crate-line "move 2 from 2 to 1")
 ;; Split up the data in different categories
-(let [all-lines (utils/get-lines "resources/5_input.txt")
-      crate-lines (take-while #(not (string/includes? % "1")) all-lines)
-      moves (drop (+ 2 (count crate-lines)) all-lines)]
-  {:crate-lines crate-lines
-   :moves moves})
+(defn parse-data
+  [file]
+  (let [all-lines (utils/get-lines file)
+        crate-lines (take-while #(not (string/includes? % "1")) all-lines)
+        move-lines (drop (+ 2 (count crate-lines)) all-lines)]
+    {:crates (map parse-crate-line crate-lines)
+     :moves (map parse-crate-line move-lines)}))
 
-(string/includes?  "input""i" )
-
+(parse-data "resources/5_input.txt")
 
 
 (let [all-lines (utils/get-lines "resources/5_input.txt")]
