@@ -31,28 +31,22 @@
 
 
 ;; Part2 
-(defn get-group-badge
+(defn get-group-info
   [group]
-  (->> group
-       (map :line)
-       (map set)
-       (reduce set/intersection)))
+  (let [badge (->> group
+                   (map :line)
+                   (map set)
+                   (reduce set/intersection)
+                   first)]
+    {:group group
+     :badge badge
+     :prio (prio badge)
+     }))
 
-(->> (utils/get-lines "resources/3_input.txt")
+(->> (utils/get-lines "resources/3_input_full.txt")
      (map parse-line)
      (partition 3) ; 3 sized collections of structure returned by parse-lines
-     (map get-group-badge))
+     (map get-group-info)
+     (map :prio)
+     (reduce +))
 
-(let [strs-in-group (first
-                     (->> (utils/get-lines "resources/3_input.txt")
-                          (map parse-line)
-                          (map :line)
-                          (partition 3)))]
-
-
-  (->> strs-in-group
-       (map set)
-       (reduce set/intersection)))
-
-;; Every item type is identified by a single lowercase or uppercase
-;; letter (that is, a and A refer to different types of items).
