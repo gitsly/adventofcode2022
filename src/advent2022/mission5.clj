@@ -32,9 +32,6 @@
      :from (utils/as-integer from)
      :to (utils/as-integer to) }))
 
-(parse-crate-line "    [D]    ")
-(parse-crate-line "[Z] [M] [P]")
-(parse-crate-line "move 2 from 2 to 1")
 ;; Split up the data in different categories
 (defn parse-data
   [file]
@@ -44,30 +41,31 @@
     {:crates (map parse-crate-line crate-lines)
      :moves (map parse-move-line move-lines)}))
 
-(->> (parse-data "resources/5_input.txt")
-     :crates
-     (map #(nth % 0))
-     )
 
-(let [crates (->> (parse-data "resources/5_input.txt") :crates)]
+(defn prepare-crate-data
+  "Creates stack (list) for each stack of boxes (from a set of crate data lines)"
+  [crates]
+  ;;  
   (for [x (range (count crates))]
-    (map #(nth % x) crates )))
-
-(map #(nth % 0))
-
-
-(map #(nth % 0) i)
-
-(for [x [1 2 3]
-      y ['a 'b 'c]]
-  [x y])
+    (map #(nth % x) crates)
+    ))
 
 
+(filter #(not (= \space %)) (first 
+                             (->> (parse-data "resources/5_input.txt")
+                                  :crates
+                                  prepare-crate-data) )) 
 
-                                        ; for.
-(map #(list (nth % 0)))
-;; (map #(conj [] (nth % 0)))
+
+(let [crate-data (->> (parse-data "resources/5_input.txt")
+                      :crates
+                      prepare-crate-data)
+      filter-fn (fn[coll] (filter #(not (= \space %)) coll))]
+  (map filter-fn crate-data))
 
 
-
+;; Testing
+(parse-crate-line "    [D]    ")
+(parse-crate-line "[Z] [M] [P]")
+(parse-crate-line "move 2 from 2 to 1")
 
