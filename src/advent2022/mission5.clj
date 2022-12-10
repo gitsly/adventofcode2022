@@ -45,8 +45,25 @@
      :moves (map parse-move-line move-lines)}))
 
 (->> (parse-data "resources/5_input.txt")
-     (:crates)
-     (map #(nth % 0)))
+     :crates
+     (map #(nth % 0))
+     )
+
+(let [crates (->> (parse-data "resources/5_input.txt") :crates)]
+  (for [x (range (count crates))]
+    (map #(nth % x) crates )))
+
+(map #(nth % 0))
+
+
+(map #(nth % 0) i)
+
+(for [x [1 2 3]
+      y ['a 'b 'c]]
+  [x y])
+
+
+
                                         ; for.
 (map #(list (nth % 0)))
 ;; (map #(conj [] (nth % 0)))
