@@ -78,28 +78,24 @@
 
 (defn move-9001
   "Perform move function using modern CrateMover 9001"
-  [start-state]
-  (loop [state start-state]
-    (let [moves (:moves state)
-          m (first moves)
-          crate-data (:crate-data state)
-          from (:from m)
-          to  (:to m)
-          item (first ((vec crate-data) (dec from)))]
-      (if (= 0 (:cnt m))
-        (assoc-in state [:moves] (rest moves)) ; move row done
-        (do
-          (println "Moving" item "from:" from "to" to)
-          (recur 
-           {:crate-data (for [x (range (count crate-data))]
-                          (if (= x (dec from))
-                            (drop 1 ((vec crate-data) x))
-                            (if (= x (dec to))
-                              (cons item ((vec crate-data) x))
-                              ((vec crate-data) x))))
+  [state]
+  (let [moves (:moves state)
+        m (first moves)
+        cnt (:cnt m)
+        crate-data (:crate-data state)
+        from (:from m)
+        to  (:to m)
+        items (take cnt ((vec crate-data) (dec from)))]
+    (println "Moving" items "from:" from "to" to)
+    {:crate-data (for [x (range (count crate-data))]
+                   (if (= x (dec from))
 
-            :moves (cons (update-in m [:cnt] dec) (rest moves))}))))))
+                     (drop cnt ((vec crate-data) x))
 
+                     (if (= x (dec to))
+                       (flatten (cons items ((vec crate-data) x)))
+                       ((vec crate-data) x))))
+     :moves (rest moves)}))
 
 (defn perform-moves
   "Performs all moves using fn-move"
@@ -111,14 +107,18 @@
       state ; final state
       (recur (fn-move state)))))
 
-;;(recur {:crate-data crate-data ; One move line done
-;;        :moves (rest moves)}))))
-
-;; Part 1
+;;Part 1
+(->> (parse-data "resources/5_input.txt")
+     (perform-moves move)
+     :crate-data
+     (map first)
+     (apply str)
+     print)
 ;; -> LBLVVTVLP
 
+;; Part 2
 (->> (parse-data "resources/5_input_full.txt")
-     (perform-moves move)
+     (perform-moves move-9001)
      :crate-data
      (map first)
      (apply str)
