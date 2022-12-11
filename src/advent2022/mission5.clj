@@ -52,15 +52,6 @@
                       (map filter-space))
      :moves (map parse-move-line move-lines)}))
 
-
-
-
-
-;; Testing
-(parse-crate-line "    [D]    ")
-(parse-crate-line "[Z] [M] [P]")
-(parse-crate-line "move 2 from 2 to 1")
-
 (defn move
   "Takes a move and crate state as input and returns new crate state"
   [move crate-data]
@@ -75,26 +66,31 @@
           (cons item ((vec crate-data) x))
           ((vec crate-data) x))))))
 
-(let [data (parse-data "resources/5_input.txt")
-      moves (:moves data)
-      crate-data (:crate-data data)]
-  (move (first moves) crate-data)
-  (println "crate-data" crate-data))
-
-;; (assoc-in {:test 3 } [:test] (inc 3))
-;; (update-in {:test 3 } [:test] dec)
-
 (defn no-moves? [moves] (and (= 0 (:cnt (first moves))) (= 1 (count moves))))
 
-(loop [state (parse-data "resources/5_input.txt")]
-  (let [moves (:moves state)
-        crate-data (:crate-data state)
-        m (first moves)]
-    ;;    (println state)
-    (if (no-moves? moves) 
-      state ; final state
-      (if (> (:cnt m) 0)
-        (recur {:crate-data (move m crate-data) ; working on a line
-                :moves (cons (update-in m [:cnt] dec) (rest moves))})
-        (recur {:crate-data crate-data ; One move line done
-                :moves (rest moves)})))))
+(defn perform-moves
+  [start-state]
+  (loop [state start-state]
+    (let [moves (:moves state)
+          crate-data (:crate-data state)
+          m (first moves)]
+      ;;    (println state)
+      (if (no-moves? moves) 
+        state ; final state
+        (if (> (:cnt m) 0)
+          (recur {:crate-data (move m crate-data) ; working on a line
+                  :moves (cons (update-in m [:cnt] dec) (rest moves))})
+          (recur {:crate-data crate-data ; One move line done
+                  :moves (rest moves)}))))))
+
+;; Part 1
+(print 
+ (apply str
+        (map first (:crate-data  
+                    (perform-moves
+                     (parse-data "resources/5_input.txt"))))))
+
+;; Testing
+(parse-crate-line "    [D]    ")
+(parse-crate-line "[Z] [M] [P]")
+(parse-crate-line "move 2 from 2 to 1")
