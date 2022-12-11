@@ -64,30 +64,35 @@
 (defn move
   "Takes a move and crate state as input and returns new crate state"
   [move crate-data]
-  (let [from (dec (:from move))
-        to (dec (:to move))
+  (let [from (:from move)
+        to  (:to move)
         item (first ((vec crate-data) from))]
     (println "Moving" item "from:" from "to" to)
     (for [x (range (count crate-data))]
-      (if (= x from)
+      (if (= x (dec from))
         (drop 1 ((vec crate-data) x))
-        (if (= x to)
+        (if (= x (dec to))
           (cons item ((vec crate-data) x))
           ((vec crate-data) x))))))
-
-
-(let [tot 3]
-  (loop [i tot]
-    (if (= i 0)
-      nil
-      (do
-        (println "looped")
-        (recur (dec i))))))
-
-
 
 (let [data (parse-data "resources/5_input.txt")
       moves (:moves data)
       crate-data (:crate-data data)]
   (move (first moves) crate-data)
   (println "crate-data" crate-data))
+
+;; (assoc-in {:test 3 } [:test] (inc 3))
+;; (update-in {:test 3 } [:test] dec)
+
+
+(loop [state (parse-data "resources/5_input.txt")]
+  (let [moves (:moves state)
+        crate-data (:crate-data state)
+        m (first moves)]
+    (println state)
+
+    (if (= 0 (:cnt m)) 
+      state ; final state
+      (recur {:crate-data (move m crate-data)
+              :moves [(update-in m [:cnt] dec)]}))
+    ))
