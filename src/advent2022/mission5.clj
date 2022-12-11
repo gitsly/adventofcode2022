@@ -56,26 +56,27 @@
 
 
 
-(defn move
-  "Takes a move and crate state as input and returns new crate state"
-  [move crate-data]
-  (let [from (:from move)
-        to(:to move)]
-    (println "Moving from:" from "to" to)
-    move))
-
-
-(let [data (parse-data "resources/5_input.txt")
-      moves (:moves data)
-      crate-data (:crate-data data)]
-  (move
-   (first moves) crate-data)
-  )
-
-
-
 ;; Testing
 (parse-crate-line "    [D]    ")
 (parse-crate-line "[Z] [M] [P]")
 (parse-crate-line "move 2 from 2 to 1")
 
+(defn move
+  "Takes a move and crate state as input and returns new crate state"
+  [move crate-data]
+  (let [from (dec (:from move))
+        to (dec (:to move))
+        item (first ((vec crate-data) from))]
+    (println "Moving" item "from:" from "to" to)
+    (for [x (range (count crate-data))]
+      (if (= x from)
+        (drop 1 ((vec crate-data) x))
+        (if (= x to)
+          (cons item ((vec crate-data) x))
+          ((vec crate-data) x))))))
+
+(let [data (parse-data "resources/5_input.txt")
+      moves (:moves data)
+      crate-data (:crate-data data)]
+  (println "crate-data" crate-data)
+  (move (first moves) crate-data))
