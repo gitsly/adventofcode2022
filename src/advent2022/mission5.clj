@@ -35,7 +35,7 @@
   "Creates stack (list) for each stack of boxes (from a set of crate data lines)"
   [crates]
   ;;  
-  (for [x (range (count crates))]
+  (for [x (range (count (first crates)))]
     (map #(nth % x) crates)
     ))
 
@@ -84,13 +84,9 @@
                   :moves (rest moves)}))))))
 
 ;; Part 1
+;; -> LBLVVTVLP
 (print 
  (apply str
         (map first (:crate-data  
                     (perform-moves
-                     (parse-data "resources/5_input.txt"))))))
-
-;; Testing
-(parse-crate-line "    [D]    ")
-(parse-crate-line "[Z] [M] [P]")
-(parse-crate-line "move 2 from 2 to 1")
+                     (parse-data "resources/5_input_full.txt"))))))
