@@ -53,40 +53,52 @@
      :moves (map parse-move-line move-lines)}))
 
 (defn move
-  "Takes a move and crate state as input and returns new crate state"
-  [move crate-data]
-  (let [from (:from move)
-        to  (:to move)
-        item (first ((vec crate-data) (dec from)))]
-    (println "Moving" item "from:" from "to" to)
-    (for [x (range (count crate-data))]
-      (if (= x (dec from))
-        (drop 1 ((vec crate-data) x))
-        (if (= x (dec to))
-          (cons item ((vec crate-data) x))
-          ((vec crate-data) x))))))
+  [start-state]
+  (loop [state start-state]
+    (let [moves (:moves state)
+          m (first moves)
+          crate-data (:crate-data state)
+          from (:from m)
+          to  (:to m)
+          item (first ((vec crate-data) (dec from)))]
+      (if (= 0 (:cnt m))
+        (assoc-in state [:moves] (rest moves)) ; move row done
+        (do
+          (println "Moving" item "from:" from "to" to)
+          (recur 
+           {:crate-data (for [x (range (count crate-data))]
+                          (if (= x (dec from))
+                            (drop 1 ((vec crate-data) x))
+                            (if (= x (dec to))
+                              (cons item ((vec crate-data) x))
+                              ((vec crate-data) x))))
+
+            :moves (cons (update-in m [:cnt] dec) (rest moves))}))))))
+
+(let [state (parse-data "resources/5_input.txt")
+      one-move-state (assoc-in state [:moves] [(first (:moves state))])]
+  (move one-move-state))
+
 
 (defn no-moves? [moves] (and (= 0 (:cnt (first moves))) (= 1 (count moves))))
 
 (defn perform-moves
-  [start-state]
+  [start-state
+   fn-move]
   (loop [state start-state]
-    (let [moves (:moves state)
-          crate-data (:crate-data state)
-          m (first moves)]
-      ;;    (println state)
-      (if (no-moves? moves) 
-        state ; final state
-        (if (> (:cnt m) 0)
-          (recur {:crate-data (move m crate-data) ; working on a line
-                  :moves (cons (update-in m [:cnt] dec) (rest moves))})
-          (recur {:crate-data crate-data ; One move line done
-                  :moves (rest moves)}))))))
+    ;;    (println state)
+    (if (no-moves? (:moves state)) 
+      state ; final state
+      (recur (fn-move state)))))
+
+;;(recur {:crate-data crate-data ; One move line done
+;;        :moves (rest moves)}))))
 
 ;; Part 1
 ;; -> LBLVVTVLP
 (print 
- (apply str
-        (map first (:crate-data  
-                    (perform-moves
-                     (parse-data "resources/5_input_full.txt"))))))
+(apply str
+       (map first (:crate-data  
+                   (perform-moves
+                    move
+                    (parse-data "resources/5_input.txt"))))))
