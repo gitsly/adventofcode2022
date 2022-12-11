@@ -39,8 +39,9 @@
     (map #(nth % x) crates)
     ))
 
-;; Split up the data in different categories
 (defn parse-data
+  "Split up input lines different categories and returns crate and
+  move data in structured map"
   [file]
   (let [all-lines (utils/get-lines file)
         crate-lines (take-while #(not (string/includes? % "1")) all-lines)
@@ -76,18 +77,18 @@
             :moves (cons (update-in m [:cnt] dec) (rest moves))}))))))
 
 (let [state (parse-data "resources/5_input.txt")
-      one-move-state (assoc-in state [:moves] [(first (:moves state))])]
-  (move one-move-state))
-
-
-(defn no-moves? [moves] (and (= 0 (:cnt (first moves))) (= 1 (count moves))))
+      test-state (assoc-in state [:moves] (take 2 (:moves state)))]
+  (move
+   (move 
+    (move 
+     (move state)))))
 
 (defn perform-moves
   [start-state
    fn-move]
   (loop [state start-state]
     ;;    (println state)
-    (if (no-moves? (:moves state)) 
+    (if (empty? (:moves state)) 
       state ; final state
       (recur (fn-move state)))))
 
@@ -97,8 +98,10 @@
 ;; Part 1
 ;; -> LBLVVTVLP
 (print 
-(apply str
-       (map first (:crate-data  
-                   (perform-moves
-                    move
-                    (parse-data "resources/5_input.txt"))))))
+ (apply str
+        (map first (:crate-data  
+                    (perform-moves
+                     move
+                     (parse-data "resources/5_input.txt"))))))
+
+(perform-moves move (parse-data "resources/5_input.txt"))
