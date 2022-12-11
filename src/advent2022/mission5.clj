@@ -66,7 +66,7 @@
   [move crate-data]
   (let [from (:from move)
         to  (:to move)
-        item (first ((vec crate-data) from))]
+        item (first ((vec crate-data) (dec from)))]
     (println "Moving" item "from:" from "to" to)
     (for [x (range (count crate-data))]
       (if (= x (dec from))
@@ -84,15 +84,17 @@
 ;; (assoc-in {:test 3 } [:test] (inc 3))
 ;; (update-in {:test 3 } [:test] dec)
 
+(defn no-moves? [moves] (and (= 0 (:cnt (first moves))) (= 1 (count moves))))
 
 (loop [state (parse-data "resources/5_input.txt")]
   (let [moves (:moves state)
         crate-data (:crate-data state)
         m (first moves)]
-    (println state)
-
-    (if (= 0 (:cnt m)) 
+    ;;    (println state)
+    (if (no-moves? moves) 
       state ; final state
-      (recur {:crate-data (move m crate-data)
-              :moves [(update-in m [:cnt] dec)]}))
-    ))
+      (if (> (:cnt m) 0)
+        (recur {:crate-data (move m crate-data) ; working on a line
+                :moves (cons (update-in m [:cnt] dec) (rest moves))})
+        (recur {:crate-data crate-data ; One move line done
+                :moves (rest moves)})))))
