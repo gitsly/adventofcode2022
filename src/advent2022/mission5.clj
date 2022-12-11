@@ -75,8 +75,19 @@
           (cons item ((vec crate-data) x))
           ((vec crate-data) x))))))
 
+
+(let [tot 3]
+  (loop [i tot]
+    (if (= i 0)
+      nil
+      (do
+        (println "looped")
+        (recur (dec i))))))
+
+
+
 (let [data (parse-data "resources/5_input.txt")
       moves (:moves data)
       crate-data (:crate-data data)]
-  (println "crate-data" crate-data)
-  (move (first moves) crate-data))
+  (move (first moves) crate-data)
+  (println "crate-data" crate-data))
