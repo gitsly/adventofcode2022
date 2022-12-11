@@ -9,7 +9,6 @@
 (defn parse-crate-line-step1
   ([data] (parse-crate-line-step1 data nil))
   ([data acc-data]
-   (println data)
    (if (empty? data)
      acc-data
      (recur (drop 4 data)
@@ -47,26 +46,32 @@
         crate-lines (take-while #(not (string/includes? % "1")) all-lines)
         move-lines (drop (+ 2 (count crate-lines)) all-lines)
         filter-space (fn[coll] (filter #(not (= \space %)) coll))]
-    {:crates (->> crate-lines
-                  (map parse-crate-line)
-                  prepare-crate-data
-                  (map filter-space))
+    {:crate-data (->> crate-lines
+                      (map parse-crate-line)
+                      prepare-crate-data
+                      (map filter-space))
      :moves (map parse-move-line move-lines)}))
 
 
-(parse-data "resources/5_input.txt")
 
 
 
 (defn move
   "Takes a move and crate state as input and returns new crate state"
-  [move
-   crate-data]
+  [move crate-data]
+  (let [from (:from move)
+        to(:to move)]
+    (println "Moving from:" from "to" to)
+    move))
 
-  crate-data)
 
+(let [data (parse-data "resources/5_input.txt")
+      moves (:moves data)
+      crate-data (:crate-data data)]
+  (move
+   (first moves) crate-data)
+  )
 
-(move crate-data (first))
 
 
 ;; Testing
