@@ -76,16 +76,15 @@
 
             :moves (cons (update-in m [:cnt] dec) (rest moves))}))))))
 
-(let [state (parse-data "resources/5_input.txt")
-      test-state (assoc-in state [:moves] (take 2 (:moves state)))]
+(let [state (parse-data "resources/5_input.txt")]
   (move
    (move 
     (move 
      (move state)))))
 
 (defn perform-moves
-  [start-state
-   fn-move]
+  [fn-move
+   start-state]
   (loop [state start-state]
     ;;    (println state)
     (if (empty? (:moves state)) 
@@ -97,11 +96,11 @@
 
 ;; Part 1
 ;; -> LBLVVTVLP
-(print 
- (apply str
-        (map first (:crate-data  
-                    (perform-moves
-                     move
-                     (parse-data "resources/5_input.txt"))))))
 
-(perform-moves move (parse-data "resources/5_input.txt"))
+(->> (parse-data "resources/5_input.txt")
+     (perform-moves move)
+     :crate-data
+     (map first)
+     (apply str)
+     print)
+
