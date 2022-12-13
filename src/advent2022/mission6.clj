@@ -7,8 +7,10 @@
 
 ;; jpqm
 
-(let [line (vec (first (utils/get-lines "resources/6_input.txt")))
-      size 4]
+(defn find-marker
+  [size
+   line]
+  (println size)
   (loop [coll line
          taken []
          index 0]
@@ -16,9 +18,19 @@
       (println marker)
       (if (= (count marker)
              (count(distinct marker)))
-        {:taken taken
+        {:marker taken
          :remaining coll
          :index (+ index size)}
         (recur (rest coll) marker (inc index))))))
 
-(def answers [7 5 6 10])
+(find-marker 4
+             (vec
+              (first (utils/get-lines "resources/6_input.txt"))))
+
+(->> (utils/get-lines "resources/6_input_full.txt")
+     (map vec)
+     (map #(find-marker 14 %))
+     (map :index))
+
+(map find-marker 4
+     (first ))
