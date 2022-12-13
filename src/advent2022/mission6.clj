@@ -5,32 +5,21 @@
             [clojure.set :as set])
   (:gen-class))
 
-;; jpqm
-
 (defn find-marker
   [size
    line]
-  (println size)
   (loop [coll line
          taken []
          index 0]
     (let [marker (take size coll)]
-      (println marker)
       (if (= (count marker)
              (count(distinct marker)))
-        {:marker taken
-         :remaining coll
-         :index (+ index size)}
+        {:marker taken :remaining coll :index (+ index size)}
         (recur (rest coll) marker (inc index))))))
 
-(find-marker 4
-             (vec
-              (first (utils/get-lines "resources/6_input.txt"))))
+;; Part 1 -> 1582
+(:index (find-marker 4 (vec (first (utils/get-lines "resources/6_input_full.txt")))))
 
-(->> (utils/get-lines "resources/6_input_full.txt")
-     (map vec)
-     (map #(find-marker 14 %))
-     (map :index))
+;; Part 2 -> 3588
+(:index (find-marker 14 (vec (first (utils/get-lines "resources/6_input_full.txt")))))
 
-(map find-marker 4
-     (first ))
