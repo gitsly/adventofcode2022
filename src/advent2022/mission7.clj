@@ -42,39 +42,37 @@
 
                  ])
 
-(when-let [apa 2] "a")
-
-
 (def sample-dir {:total-size 12
                  :wd "/"})
 
 (defn build-dir
-  [state]
-  state)
+[state]
+state)
 
 
 (defn first-not-nil
-  [coll]
-  (first (filter #(not (nil? %)) coll)))
+[coll]
+(first (filter #(not (nil? %)) coll)))
 
 
 (defn parse-line
-  [commands
-   line]
-  (first-not-nil
-   (map #(let [input-data %
-               pattern (:regex input-data)
-               transform (:transform input-data)]
-           (transform (re-matches pattern line))) commands)))
+[commands
+ line]
+(first-not-nil
+ (map #(let [input-data %
+             pattern (:regex input-data)
+             transform (:transform input-data)]
+         (transform (re-matches pattern line))) commands)))
 
 
 (parse-line input-data "$ cd /")
 (parse-line input-data "$ ls")
 (parse-line input-data "dir a")
-(parse-line input-data "62596 h.lst")
+(contains? (parse-line input-data "62596 h.lst") :data)
 
 (->> (utils/get-lines "resources/7_input.txt")
-     #(map parse-line input-data %))
+     (map #(parse-line input-data %))
+     (map :command))
 
 ;; Part 1 -> 1582
 (let [all-lines (utils/get-lines "resources/7_input.txt")]
