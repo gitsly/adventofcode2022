@@ -45,14 +45,11 @@
 (def sample-dir {:total-size 12
                  :wd "/"})
 
-(defn build-dir
-[state]
-state)
 
 
 (defn first-not-nil
-[coll]
-(first (filter #(not (nil? %)) coll)))
+  [coll]
+  (first (filter #(not (nil? %)) coll)))
 
 
 (defn parse-line
@@ -70,15 +67,19 @@ state)
 (parse-line input-data "dir a")
 (contains? (parse-line input-data "62596 h.lst") :data)
 
-(->> (utils/get-lines "resources/7_input.txt")
-     (map #(parse-line input-data %))
-     (map :command))
+
+
 
 ;; Part 1 -> 1582
-(let [all-lines (utils/get-lines "resources/7_input.txt")]
-;; Build state from input
-(loop [lines all-lines
-       state {:note "initial state"}]
-  (if(empty? lines)
-    state
-    (recur (rest lines) (build-dir state)))))
+(let [all-input (->> (utils/get-lines "resources/7_input.txt")
+                     (map #(parse-line input-data %)))
+      build-dir (fn [state
+                     data]
+                  state)
+      ]
+  ;; Build state from input
+  (loop [input all-input 
+         state {:note "initial state"}]
+    (if(empty? input)
+      state
+      (recur (rest input) (build-dir state (first input))))))
