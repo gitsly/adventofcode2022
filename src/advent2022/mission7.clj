@@ -21,7 +21,15 @@
     - d.ext (file, size=5626152)
     - k (file, size=7214296)")
 
-(def commands { :cd #"cd (.*)" })
+(def command-list [{:regex #"\$ cd (.*)"
+                    :transform (fn [input]
+                                 (when-let [[_ arg] input]
+                                   { :command 'cd
+                                    :arg arg}) )}
+                   {:regex #"\$ ls"
+                    :transform (fn [input] (when-let [_ input] {:command 'ls }))}])
+
+(when-let [apa 2] "a")
 
 
 (def sample-dir {:total-size 12
@@ -31,14 +39,36 @@
   [state]
   state)
 
+(defn parse-line
+  [line
+   command-list])
+
+(let [
+      ;; line "$ cd /"
+      line "$ ls"
+      ]
+  (loop [commands command-list]
+    (let [cmd (first commands)
+          pattern (:regex cmd)
+          transform (:transform cmd)
+          found (transform (re-matches pattern line))]
+      (if (or (empty? commands) (not (nil? found)))
+        found
+        (recur (rest commands))))))
+
+
+
+(parse-line "$ cd /" command-list))) 
+
 ;; Part 1 -> 1582
 (let [all-lines (utils/get-lines "resources/7_input.txt")]
-                                        ; Build state from input
-  (loop [lines all-lines
-         state {:note "initial state"}]
-    (if(empty? lines)
-      state
-      (recur (rest lines) (build-dir state)))))
+;; Build state from input
+(loop [lines all-lines
+state {:note "initial state"}]
+
+(if(empty? lines)
+state
+(recur (rest lines) (build-dir state)))))
 
 
 (utils/get-lines "resources/7_input.txt")
