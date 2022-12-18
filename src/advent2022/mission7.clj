@@ -45,16 +45,18 @@
 
 (let [
       ;; line "$ cd /"
-      line "$ ls"
-      ]
+      line " ls"]
   (loop [commands command-list]
     (let [cmd (first commands)
-          pattern (:regex cmd)
-          transform (:transform cmd)
-          found (transform (re-matches pattern line))]
-      (if (or (empty? commands) (not (nil? found)))
+          found (when-let [pattern (:regex cmd)
+                           transform (:transform cmd)]
+                  (transform (re-matches pattern line)))]
+      (println cmd)
+      (if (not (nil? found))
         found
-        (recur (rest commands))))))
+        (if (empty? commands)
+          nil
+          (recur (rest commands)))))))
 
 
 
