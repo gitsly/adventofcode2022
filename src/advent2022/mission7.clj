@@ -43,20 +43,20 @@
   [line
    command-list])
 
-(let [
-      ;; line "$ cd /"
-      line " ls"]
-  (loop [commands command-list]
-    (let [cmd (first commands)
-          found (when-let [pattern (:regex cmd)
-                           transform (:transform cmd)]
-                  (transform (re-matches pattern line)))]
-      (println cmd)
-      (if (not (nil? found))
-        found
-        (if (empty? commands)
-          nil
-          (recur (rest commands)))))))
+(defn first-not-nil
+  [coll]
+  (first (filter #(not (nil? %)) coll)))
+
+
+(let [commands command-list
+      line "$ cd /"
+      ;;line "$ ls"
+      ]
+  (first-not-nil
+   (map #(let [cmd %
+               pattern (:regex cmd)
+               transform (:transform cmd)]
+           (transform (re-matches pattern line))) commands)))
 
 
 
