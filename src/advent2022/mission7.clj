@@ -27,7 +27,20 @@
                                    { :command 'cd
                                     :arg arg}) )}
                    {:regex #"\$ ls"
-                    :transform (fn [input] (when-let [_ input] {:command 'ls }))}])
+                    :transform (fn [input]
+                                 (when-let [_ input] {:command 'ls }))}
+
+                   {:regex #"dir (.*)"
+                    :transform (fn [input]
+                                 (when-let [[_ arg] input] {:command 'dir :arg arg}))}
+
+                   {:regex #"(\d*) (.*)"
+                    :transform (fn [input]
+                                 (when-let [[_ size file] input] {:command 'file
+                                                                  :size size
+                                                                  :file file}))}
+
+                   ])
 
 (when-let [apa 2] "a")
 
@@ -39,19 +52,15 @@
   [state]
   state)
 
-(defn parse-line
-  [line
-   command-list])
 
 (defn first-not-nil
   [coll]
   (first (filter #(not (nil? %)) coll)))
 
 
-(let [commands command-list
-      line "$ cd /"
-      ;;line "$ ls"
-      ]
+(defn parse-line
+  [commands
+   line]
   (first-not-nil
    (map #(let [cmd %
                pattern (:regex cmd)
@@ -59,18 +68,19 @@
            (transform (re-matches pattern line))) commands)))
 
 
+(parse-line command-list "$ cd /")
+(parse-line command-list "$ ls")
+(parse-line command-list "dir a")
+(parse-line command-list "62596 h.lst")
 
-(parse-line "$ cd /" command-list))) 
+(->> (utils/get-lines "resources/7_input.txt")
+     #(map parse-line command-list %))
 
 ;; Part 1 -> 1582
 (let [all-lines (utils/get-lines "resources/7_input.txt")]
 ;; Build state from input
 (loop [lines all-lines
-state {:note "initial state"}]
-
-(if(empty? lines)
-state
-(recur (rest lines) (build-dir state)))))
-
-
-(utils/get-lines "resources/7_input.txt")
+       state {:note "initial state"}]
+  (if(empty? lines)
+    state
+    (recur (rest lines) (build-dir state)))))
