@@ -21,26 +21,26 @@
     - d.ext (file, size=5626152)
     - k (file, size=7214296)")
 
-(def command-list [{:regex #"\$ cd (.*)"
-                    :transform (fn [input]
-                                 (when-let [[_ arg] input]
-                                   { :command 'cd
-                                    :arg arg}) )}
-                   {:regex #"\$ ls"
-                    :transform (fn [input]
-                                 (when-let [_ input] {:command 'ls }))}
+(def input-data [{:regex #"\$ cd (.*)"
+                  :transform (fn [input]
+                               (when-let [[_ arg] input]
+                                 { :command 'cd
+                                  :arg arg}) )}
+                 {:regex #"\$ ls"
+                  :transform (fn [input]
+                               (when-let [_ input] {:command 'ls }))}
 
-                   {:regex #"dir (.*)"
-                    :transform (fn [input]
-                                 (when-let [[_ arg] input] {:command 'dir :arg arg}))}
+                 {:regex #"dir (.*)"
+                  :transform (fn [input]
+                               (when-let [[_ arg] input] {:data 'dir :arg arg}))}
 
-                   {:regex #"(\d*) (.*)"
-                    :transform (fn [input]
-                                 (when-let [[_ size file] input] {:command 'file
-                                                                  :size size
-                                                                  :file file}))}
+                 {:regex #"(\d*) (.*)"
+                  :transform (fn [input]
+                               (when-let [[_ size file] input] {:data 'file
+                                                                :size size
+                                                                :file file}))}
 
-                   ])
+                 ])
 
 (when-let [apa 2] "a")
 
@@ -62,19 +62,19 @@
   [commands
    line]
   (first-not-nil
-   (map #(let [cmd %
-               pattern (:regex cmd)
-               transform (:transform cmd)]
+   (map #(let [input-data %
+               pattern (:regex input-data)
+               transform (:transform input-data)]
            (transform (re-matches pattern line))) commands)))
 
 
-(parse-line command-list "$ cd /")
-(parse-line command-list "$ ls")
-(parse-line command-list "dir a")
-(parse-line command-list "62596 h.lst")
+(parse-line input-data "$ cd /")
+(parse-line input-data "$ ls")
+(parse-line input-data "dir a")
+(parse-line input-data "62596 h.lst")
 
 (->> (utils/get-lines "resources/7_input.txt")
-     #(map parse-line command-list %))
+     #(map parse-line input-data %))
 
 ;; Part 1 -> 1582
 (let [all-lines (utils/get-lines "resources/7_input.txt")]
