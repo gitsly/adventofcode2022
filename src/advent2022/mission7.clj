@@ -27,13 +27,18 @@
 (def sample-dir {:total-size 12
                  :wd "/"})
 
+(defn build-dir
+  [state]
+  state)
+
 ;; Part 1 -> 1582
 (let [all-lines (utils/get-lines "resources/7_input.txt")]
-  (loop [lines all-lines]
-    (println (first lines))
+                                        ; Build state from input
+  (loop [lines all-lines
+         state {:note "initial state"}]
     (if(empty? lines)
-      nil
-      (recur (rest lines)))))
+      state
+      (recur (rest lines) (build-dir state)))))
 
 
 (utils/get-lines "resources/7_input.txt")
