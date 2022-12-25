@@ -24,19 +24,19 @@
 (def input-data [{:regex #"\$ cd (.*)"
                   :transform (fn [input]
                                (when-let [[_ arg] input]
-                                 { :command 'cd
+                                 { :command :cd
                                   :arg arg}) )}
                  {:regex #"\$ ls"
                   :transform (fn [input]
-                               (when-let [_ input] {:command 'ls }))}
+                               (when-let [_ input] {:command :ls }))}
 
                  {:regex #"dir (.*)"
                   :transform (fn [input]
-                               (when-let [[_ arg] input] {:data 'dir :arg arg}))}
+                               (when-let [[_ arg] input] {:data :dir :arg arg}))}
 
                  {:regex #"(\d*) (.*)"
                   :transform (fn [input]
-                               (when-let [[_ size file] input] {:data 'file
+                               (when-let [[_ size file] input] {:data :file
                                                                 :size size
                                                                 :file file}))}
 
@@ -67,16 +67,25 @@
 (parse-line input-data "dir a")
 (contains? (parse-line input-data "62596 h.lst") :data)
 
+(when-let [test (:command (parse-line input-data "cd /"))]
+  test) 
 
 
+(let [data (parse-line input-data "$ cd /")
+      command-fns {:cd (fn [arg] nil)}
+      cmd-fn (:command command-fns)]
+  
+  (cmd-fn data))
 
 ;; Part 1 -> 1582
 (let [all-input (->> (utils/get-lines "resources/7_input.txt")
                      (map #(parse-line input-data %)))
       build-dir (fn [state
                      data]
-                  state)
-      ]
+
+                  (if ()) 
+
+                  state)]
   ;; Build state from input
   (loop [input all-input 
          state {:note "initial state"}]
