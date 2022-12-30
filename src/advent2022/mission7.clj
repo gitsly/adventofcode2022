@@ -59,22 +59,38 @@
 
 (parse-line input-data "$ cd /")
 (parse-line input-data "$ ls")
-(parse-line input-data "dir a")
-(contains? (parse-line input-data "62596 h.lst") :data)
+
 
 (when-let [test (:command (parse-line input-data "cd /"))]
   test) 
 
-(def sample-state1 {:cwd []} )
-
-
+(def sample-state1 {:cwd [] :note "initial state"} )
+(def sample-dir (parse-line input-data "dir a"))
+(def sample-file (parse-line input-data "62596 h.lst"))
 
 (defn cd 
   [state
    dir]
-  (update state :cwd #(conj % dir)))
+  (if (= ".." dir)
+    (update state :cwd #(pop %))
+    (update state :cwd #(conj % dir))))
 
 
+(defn ls[])
+
+(let [state (cd sample-state1 "somedir")
+      content [sample-dir sample-file] ; list of data (files / dir)
+
+      cwd (:cwd state)]
+  (if (empty? cwd)
+    state
+    { cwd content }))
+
+;;(= sample-state1 (cd (cd sample-state1 "heppas") "..")) ;-> true
+
+
+;; possible to use list as a key into map
+;;(get { ["a" "b"] 1 } ["a" "b"] )
 
 
 ;; Map 'commands' to specific function transforming the 'state' 
