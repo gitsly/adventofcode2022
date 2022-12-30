@@ -99,27 +99,40 @@
 ;; possible to use list as a key into map
 ;;(get { ["a" "b"] 1 } ["a" "b"] )
 
+(let [data (->> (utils/get-lines "resources/7_input.txt")
+                (map #(parse-line input-data %)))
+      spl (split-with #(:command %) data)
+      commands (map :command spl)
 
-;; Map 'commands' to specific function transforming the 'state' 
-(let [data (parse-line input-data "$ cd /")
-      command-fns {:cd (fn [arg] nil)}
-      cmd-fn ((:command data) command-fns)]
+      [commands dtr] spl]
+
+  (->>
+   {:commands commands
+    :dtr (take-while #(:data %) dtr) }
+   :dtr
+   count)
+  
+  ;;  {:commands (take-while #(:command %) data)
+  ;;   :data (take-while #(:data %) data) }
+
+  )
+
 
   (cmd-fn data))
 
 ;; Part 1
 (let [all-input (->> (utils/get-lines "resources/7_input.txt")
                      (map #(parse-line input-data %)))
-      build-dir (fn [state
-                     data]
+build-dir (fn [state
+               data]
 
 
-                  state)]
+            state)]
 ;; Build state from input
 (loop [input all-input 
        state {:note "initial state"}]
-  (if(empty? input)
-    state
-    (recur (rest input) (build-dir state (first input))))))
+(if(empty? input)
+  state
+  (recur (rest input) (build-dir state (first input))))))
 
 
