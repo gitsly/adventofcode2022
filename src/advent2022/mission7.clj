@@ -76,15 +76,15 @@
     (update state :cwd #(conj % dir))))
 
 
-(defn ls[])
+(defn ls
+  [state
+   content]  ; [sample-dir sample-file] list of data (files / dir)
+  (let [cwd (:cwd state)]
+    (if (empty? cwd)
+      state
+      { cwd content })))
 
-(let [state (cd sample-state1 "somedir")
-      content [sample-dir sample-file] ; list of data (files / dir)
-
-      cwd (:cwd state)]
-  (if (empty? cwd)
-    state
-    { cwd content }))
+(ls (cd sample-state1 "somedir") [sample-dir sample-file])
 
 ;;(= sample-state1 (cd (cd sample-state1 "heppas") "..")) ;-> true
 
