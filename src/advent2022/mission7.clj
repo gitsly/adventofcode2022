@@ -42,11 +42,6 @@
 
                  ])
 
-(def sample-dir {:total-size 12
-                 :wd "/"})
-
-
-
 (defn first-not-nil
   [coll]
   (first (filter #(not (nil? %)) coll)))
@@ -70,25 +65,38 @@
 (when-let [test (:command (parse-line input-data "cd /"))]
   test) 
 
+(def sample-state1 {:cwd []} )
 
+
+
+(defn cd 
+  [state
+   dir]
+  (update state :cwd #(conj % dir)))
+
+
+
+
+;; Map 'commands' to specific function transforming the 'state' 
 (let [data (parse-line input-data "$ cd /")
       command-fns {:cd (fn [arg] nil)}
-      cmd-fn (:command command-fns)]
-  
+      cmd-fn ((:command data) command-fns)]
+
   (cmd-fn data))
 
-;; Part 1 -> 1582
+;; Part 1
 (let [all-input (->> (utils/get-lines "resources/7_input.txt")
                      (map #(parse-line input-data %)))
       build-dir (fn [state
                      data]
 
-                  (if ()) 
 
                   state)]
-  ;; Build state from input
-  (loop [input all-input 
-         state {:note "initial state"}]
-    (if(empty? input)
-      state
-      (recur (rest input) (build-dir state (first input))))))
+;; Build state from input
+(loop [input all-input 
+       state {:note "initial state"}]
+  (if(empty? input)
+    state
+    (recur (rest input) (build-dir state (first input))))))
+
+
