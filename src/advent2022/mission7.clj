@@ -48,13 +48,13 @@
 
 
 (defn parse-line
-[commands
- line]
-(first-not-nil
- (map #(let [input-data %
-             pattern (:regex input-data)
-             transform (:transform input-data)]
-         (transform (re-matches pattern line))) commands)))
+  [commands
+   line]
+  (first-not-nil
+   (map #(let [input-data %
+               pattern (:regex input-data)
+               transform (:transform input-data)]
+           (transform (re-matches pattern line))) commands)))
 
 
 (parse-line input-data "$ cd /")
@@ -64,7 +64,8 @@
 (when-let [test (:command (parse-line input-data "cd /"))]
   test) 
 
-(def sample-state1 {:cwd [] :note "initial state"} )
+(def initial-state {:cwd [] :note "initial state"} )
+(def sample-state1 {:cwd [] :note "sample state 1"} )
 (def sample-dir (parse-line input-data "dir a"))
 (def sample-file (parse-line input-data "62596 h.lst"))
 
@@ -79,12 +80,18 @@
 (defn ls
   [state
    content]  ; [sample-dir sample-file] list of data (files / dir)
-  (let [cwd (:cwd state)]
+  (let [cwd (:cwd state)
+        dirs (:dirs state)]
     (if (empty? cwd)
       state
-      { cwd content })))
+      (update state :dirs #(merge % { cwd content })))))
 
-(ls (cd sample-state1 "somedir") [sample-dir sample-file])
+;; Test some seqential state shifting
+(-> sample-state1
+    (cd "somedir")
+    (ls [sample-dir sample-file])
+    (cd "another")
+    (ls [{:apa 1}]))
 
 ;;(= sample-state1 (cd (cd sample-state1 "heppas") "..")) ;-> true
 
