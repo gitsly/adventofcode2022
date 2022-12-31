@@ -77,6 +77,7 @@
     (update state :cwd #(conj % dir))))
 
 
+;; Make this a null-op? and add datas to the cwd? 
 (defn ls
   [state
    content]  ; [sample-dir sample-file] list of data (files / dir)
@@ -86,12 +87,14 @@
       state
       (update state :dirs #(merge % { cwd content })))))
 
+
 ;; Test some seqential state shifting
 (-> sample-state1
     (cd "somedir")
     (ls [sample-dir sample-file])
     (cd "another")
     (ls [{:apa 1}]))
+
 
 ;;(= sample-state1 (cd (cd sample-state1 "heppas") "..")) ;-> true
 
@@ -110,29 +113,24 @@
    {:commands commands
     :dtr (take-while #(:data %) dtr) }
    :dtr
-   count)
-  
-  ;;  {:commands (take-while #(:command %) data)
-  ;;   :data (take-while #(:data %) data) }
-
-  )
+   count))
 
 
-  (cmd-fn data))
 
 ;; Part 1
 (let [all-input (->> (utils/get-lines "resources/7_input.txt")
                      (map #(parse-line input-data %)))
-build-dir (fn [state
-               data]
+      init-state initial-state
+      build-dir (fn [state
+                     data]
 
 
-            state)]
-;; Build state from input
-(loop [input all-input 
-       state {:note "initial state"}]
-(if(empty? input)
-  state
-  (recur (rest input) (build-dir state (first input))))))
+                  state)]
+  ;; Build state from input
+  (loop [input all-input 
+         state init-state]
+    (if(empty? input)
+      state
+      (recur (rest input) (build-dir state (first input))))))
 
 
