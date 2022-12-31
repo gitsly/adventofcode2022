@@ -24,21 +24,20 @@
 (def input-data [{:regex #"\$ cd (.*)"
                   :transform (fn [input]
                                (when-let [[_ arg] input]
-                                 { :command :cd
-                                  :arg arg}) )}
+                                 {:cd arg}) )}
                  {:regex #"\$ ls"
                   :transform (fn [input]
-                               (when-let [_ input] {:command :ls }))}
+                               (when-let [_ input] {:ls true}))}
 
                  {:regex #"dir (.*)"
                   :transform (fn [input]
-                               (when-let [[_ arg] input] {:data :dir :arg arg}))}
+                               (when-let [[_ arg] input] {:dir arg
+                                                          :content []}))}
 
                  {:regex #"(\d*) (.*)"
                   :transform (fn [input]
-                               (when-let [[_ size file] input] {:data :file
-                                                                :size size
-                                                                :file file}))}
+                               (when-let [[_ size file] input] {:file file
+                                                                :size (utils/as-integer size)}))}
 
                  ])
 
@@ -69,6 +68,9 @@
 (def sample-dir (parse-line input-data "dir a"))
 (def sample-file (parse-line input-data "62596 h.lst"))
 
+(println sample-dir)
+(println sample-file)
+
 (defn cd 
   [state
    dir]
@@ -77,23 +79,45 @@
     (update state :cwd #(conj % dir))))
 
 
-;; Make this a null-op? and add datas to the cwd? 
 (defn ls
+  "null-op: add as encountered after ls instead" 
+  [state]
+  state)
+
+(defn file
   [state
-   content]  ; [sample-dir sample-file] list of data (files / dir)
-  (let [cwd (:cwd state)
-        dirs (:dirs state)]
-    (if (empty? cwd)
-      state
-      (update state :dirs #(merge % { cwd content })))))
+   f]
+  state)
+
+(defn dir
+  [state
+   d]
+  state)
+
+(let [state sample-state1
+      content []
+
+      cwd (:cwd state)
+      dirs (:dirs state)]
+  (if (empty? cwd)
+    state
+    (update state :dirs #(merge % { cwd content }))))
+
+{:dir "/"
+ :content [{:file "b.txt" :size 14848514 }
+           {:dir "a"
+            :content [{:dir "e" }
+                      {:file "b.txt" :size 14848514 }]}]}
 
 
 ;; Test some seqential state shifting
-(-> sample-state1
-    (cd "somedir")
-    (ls [sample-dir sample-file])
+(-> initial-state
+    (cd "/")
+    ls
+    (dir sample-dir)
+    (file sample-file)
     (cd "another")
-    (ls [{:apa 1}]))
+    ls)
 
 
 ;;(= sample-state1 (cd (cd sample-state1 "heppas") "..")) ;-> true
@@ -109,11 +133,11 @@
 
       [commands dtr] spl]
 
-  (->>
-   {:commands commands
-    :dtr (take-while #(:data %) dtr) }
-   :dtr
-   count))
+(->>
+ {:commands commands
+  :dtr (take-while #(:data %) dtr) }
+ :dtr
+ count))
 
 
 
@@ -126,11 +150,11 @@
 
 
                   state)]
-  ;; Build state from input
-  (loop [input all-input 
-         state init-state]
-    (if(empty? input)
-      state
-      (recur (rest input) (build-dir state (first input))))))
+;; Build state from input
+(loop [input all-input 
+       state init-state]
+  (if(empty? input)
+    state
+    (recur (rest input) (build-dir state (first input))))))
 
 
