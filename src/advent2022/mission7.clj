@@ -103,21 +103,43 @@
     state
     (update state :dirs #(merge % { cwd content }))))
 
-{:dir "/"
- :content [{:file "b.txt" :size 14848514 }
-           {:dir "a"
-            :content [{:dir "e" }
-                      {:file "b.txt" :size 14848514 }]}]}
+(def sample-data1
+  {:dir "/"
+   :content [{:dir "a"
+              :content [{:dir "e" }
+                        {:file "b.txt" :size 14848514 }
+                        {:file "c.dat" :size 8504156 }
+                        ]}]})
 
+
+(+ 14848514
+   8504156)
+
+(defn size-of-files-in-dir
+  [dir]
+  (reduce + (map :size
+                 (filter :file (:content dir)))))
+
+(size-of-files-in-dir (first (:content sample-data1)))
+
+
+;; unsure if this could be useful
+(tree-seq :dir #(:file %) {:dir "/"
+                           :content [{:file "b.txt" :size 14848514 }
+                                     {:dir "a"
+                                      :content [{:dir "e" }
+                                                {:file "b.txt" :size 14848514 }]}]}))
+                                        ; Total size of Dir 'a
+(+ 584 29116 2557 62596)
 
 ;; Test some seqential state shifting
 (-> initial-state
-    (cd "/")
-    ls
-    (dir sample-dir)
-    (file sample-file)
-    (cd "another")
-    ls)
+(cd "/")
+ls
+(dir sample-dir)
+(file sample-file)
+(cd "another")
+ls)
 
 
 ;;(= sample-state1 (cd (cd sample-state1 "heppas") "..")) ;-> true
