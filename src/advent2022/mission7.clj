@@ -204,12 +204,17 @@
                                    (rest input)
                                    (build-dir state (first input))))))
 
+      size-of-dir (fn [d]
+                    (reduce + 
+                            (->>
+                             (filter #(:size %) (tree-seq map? vals d) )
+                             (map :size))))
+
       root (get-in filesystem [:/])]; -> i file
 
-  (= 
-   (+
-    14848514
-    8504156)
-   (size-of-files-in-dir root)))
+
+  (size-of-dir (get-in filesystem [:/ :d])) )
+
+
 
 
