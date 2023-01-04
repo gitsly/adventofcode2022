@@ -80,14 +80,17 @@
     (update (if (= ".." dir)
               (update state :cwd #(pop %))
               (-> state
-                  (update :cwd #(conj % (keyword dir))))) :dirs #(conj % cwd))))
+                  (update :cwd #(conj % (keyword dir)))))
+            :dirs #(if (empty? cwd)
+                     %
+                     (conj % cwd))))))
 
-;;(cd initial-state {:cd "/"})
+(cd initial-state {:cd "/"})
 
 
 (conj 
- (conj #{} [:a])
- [:a :b])
+(conj #{} [:a])
+[:a :b])
 
 
 (conj #{[:/ :a] [:/]} [:/]) 
@@ -95,9 +98,9 @@
 (conj #{[:/ :a] [:/]} []) 
 
 (defn ls
-  "null-op: add as encountered after ls instead" 
-  [state]
-  state)
+"null-op: add as encountered after ls instead" 
+[state]
+state)
 
 (defn file
 [state
@@ -231,7 +234,9 @@ keys)
 
   ;; (tree-seq map? vals filesystem)
 
-  dirs)
+  (map (fn[d]
+         {d (size-of-dir (get-in filesystem d))})
+       dirs))
 
 
 
