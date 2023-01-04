@@ -118,9 +118,9 @@
 
       cwd (:cwd state)
       dirs (:dirs state)]
-(if (empty? cwd)
-  state
-  (update state :dirs #(merge % { cwd content }))))
+  (if (empty? cwd)
+    state
+    (update state :dirs #(merge % { cwd content }))))
 
 (def sample-data1
   {:dir "/"
@@ -130,38 +130,40 @@
                         {:file "c.dat" :size 8504156 }
                         ]}]})
 
-(def sample-data2
-  {:/
-   [{:a
-     [{:e []}
-      "f" "g" "h.lst"]}
-    "b.txt", "c.dat"
-    {:d
-     []}]})
-
-(def sample-data3a
-  {:/ [{:a [{:e [{:file "i" :size 584}]}
-            {:file "f" :size 29116}
-            {:file "g" :size 29116}
-            {:file "h.lst" :size 29116}]}
-       {:file "b.txt" :size 14848514}
-       {:file "c.dat" :size 8504156}
-       {:d [{:file "j" :size 4060174}
-            {:file "d.log" :size 8033020}
-            {:file "d.ext" :size 5626152}
-            {:file "k" :size 7214296}]}]})
-
 ;; This structure should work nice with built in 
-(def sample-data3
-  {:/ 
-   {:a
-    {"d.log" {:size 8033020}}
-    "d.ext" {:size 5626152}
-    "k" {:size 7214296}}})
+(def sample-data {
+                  :/ {
+                      :a {
+                          :e {
+                              "i" {:size 584}
+                              }
+                          "f" {:size 29116}
+                          "g" {:size 2557}
+                          "h.lst" {:size 62596}
+                          }
+                      "b.txt" {:size 14848514}
+                      "c.dat" {:size 8504156}
 
-(keys (:/ sample-data3))
+                      :d {"j" {:size 4060174}
+                          "d.log" {:size 8033020}
+                          "d.ext" {:size 5626152}
+                          "k" {:size 7214296}}
+                      }
+                  })
 
-(get-in sample-data3 [:/ :a]); working
+
+(-> sample-data
+    :/
+    keys)
+
+(get-in sample-data [:/ :a :e]); -> i file
+
+;; Get count of 'files' with :size in directory '/a'
+(count
+ (filter #(:size %)
+         (vals (get-in sample-data [:/ :a]))))
+
+(count (get-in sample-data [:/ :d])); -> 4 files
 
 (walk/prewalk-demo sample-data3)
 
