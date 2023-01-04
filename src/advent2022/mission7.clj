@@ -62,7 +62,7 @@
 (when-let [test (:command (parse-line input-data "cd /"))]
   test) 
 
-(def initial-state {:cwd [] :note "initial state" :counter 0 :filesystem {} } )
+(def initial-state {:cwd [] :note "initial state" :counter 0 :filesystem {} :dirs #{} } )
 (def sample-state1 {:cwd [] :note "sample state 1"} )
 (def sample-dir (parse-line input-data "dir a"))
 (def sample-file (parse-line input-data "62596 h.lst"))
@@ -74,13 +74,25 @@
 (defn cd 
   [state
    d]
-  (let [dir (:cd d)]
-    (println "cd" dir)
-    (if (= ".." dir)
-      (update state :cwd #(pop %))
-      (-> state
-          (update :cwd #(conj % (keyword dir)))))))
+  (let [dir (:cd d)
+        cwd (:cwd state)]
+    (println (string/join (map name (:cwd state)))"> cd" dir )
+    (update (if (= ".." dir)
+              (update state :cwd #(pop %))
+              (-> state
+                  (update :cwd #(conj % (keyword dir))))) :dirs #(conj % cwd))))
 
+;;(cd initial-state {:cd "/"})
+
+
+(conj 
+ (conj #{} [:a])
+ [:a :b])
+
+
+(conj #{[:/ :a] [:/]} [:/]) 
+
+(conj #{[:/ :a] [:/]} []) 
 
 (defn ls
   "null-op: add as encountered after ls instead" 
@@ -88,31 +100,31 @@
   state)
 
 (defn file
-  [state
-   f]
-  (let [path (concat [:filesystem] (:cwd state))]
-    (update-in state path
-               #(merge % {(:file f) {:size (:size f)}}))))
+[state
+ f]
+(let [path (concat [:filesystem] (:cwd state))]
+  (update-in state path
+             #(merge % {(:file f) {:size (:size f)}}))))
 
 (defn dir [state
            dir]
-  (let [path (concat [:filesystem] (:cwd state))]
-    (update-in state path
-               #(merge % {(keyword (:dir dir)) {}}))))
+(let [path (concat [:filesystem] (:cwd state))]
+  (update-in state path
+             #(merge % {(keyword (:dir dir)) {}}))))
 
 ;; Test some seqential state shifting
 
 (-> initial-state
-    (cd {:cd "/"})
-    ls
-    (dir sample-dir)
-    (file sample-file)
-    (file sample-file2)
-    (cd {:cd "a"})
-    (file {:file "testfile.txt" :size 1231})
-    ls
+(cd {:cd "/"})
+ls
+(dir sample-dir)
+(file sample-file)
+(file sample-file2)
+(cd {:cd "a"})
+(file {:file "testfile.txt" :size 1231})
+ls
 
-    :filesystem)
+:filesystem)
 
 
 ;;(update-in {:a {:b "test"}} [:a] #(cons % "a" ))
@@ -122,9 +134,9 @@
 
       cwd (:cwd state)
       dirs (:dirs state)]
-  (if (empty? cwd)
-    state
-    (update state :dirs #(merge % { cwd content }))))
+(if (empty? cwd)
+  state
+  (update state :dirs #(merge % { cwd content }))))
 
 ;; This structure should work nice with built in 
 (def sample-data {
@@ -149,15 +161,15 @@
 
 
 (-> sample-data
-    :/
-    keys)
+:/
+keys)
 
 (get-in sample-data [:/ :a :e]); -> i file
 
 ;; Get count of 'files' with :size in directory '/a'
 (count
- (filter #(:size %)
-         (vals (get-in sample-data [:/ :a]))))
+(filter #(:size %)
+        (vals (get-in sample-data [:/ :a]))))
 
 (count (get-in sample-data [:/ :d])); -> 4 files
 
@@ -166,7 +178,7 @@
 
 
 (+ 14848514
-   8504156)
+8504156)
 
 
 
@@ -176,9 +188,7 @@
 
 ;; Part 1
 (let [all-input (->> (utils/get-lines "resources/7_input.txt")
-                     (map #(parse-line input-data %))
-                     ;;(take 6)
-                     )
+                     (map #(parse-line input-data %)))
 
       init-state initial-state
 
@@ -196,13 +206,15 @@
                              [d]
                              (reduce + (map :size (filter :size (vals d)))))
 
-      filesystem (:filesystem (loop [input all-input 
-                                     state init-state]
-                                (if (empty? input)
-                                  state ; done
-                                  (recur
-                                   (rest input)
-                                   (build-dir state (first input))))))
+      processed  (loop [input all-input 
+                        state init-state]
+                   (if (empty? input)
+                     state ; done
+                     (recur
+                      (rest input)
+                      (build-dir state (first input)))))
+
+      filesystem (:filesystem processed)
 
       size-of-dir (fn [d]
                     (reduce + 
@@ -210,10 +222,16 @@
                              (filter #(:size %) (tree-seq map? vals d) )
                              (map :size))))
 
-      root (get-in filesystem [:/])]; -> i file
+      root (get-in filesystem [:/])
+
+      test-size (size-of-dir (get-in filesystem [:/ :d]))
+
+      dirs (:dirs processed)]
 
 
-  (size-of-dir (get-in filesystem [:/ :d])) )
+  ;; (tree-seq map? vals filesystem)
+
+  dirs)
 
 
 
