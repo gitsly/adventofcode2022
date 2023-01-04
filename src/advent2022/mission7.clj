@@ -190,7 +190,7 @@ keys)
 
 
 ;; Part 1
-(let [all-input (->> (utils/get-lines "resources/7_input_full.txt")
+(let [all-input (->> (utils/get-lines "resources/7_input.txt")
                      (map #(parse-line input-data %)))
 
       init-state initial-state
