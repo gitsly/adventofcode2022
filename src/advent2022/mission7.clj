@@ -115,22 +115,6 @@
     :filesystem)
 
 
-(let [lines ["$ cd /"
-             "$ ls"
-             "dir a"
-             "14848514 b.txt"
-             "8504156 c.dat"]
-      data (map #(parse-line input-data %) lines)
-      creator (fn creator
-                [state
-                 d]
-                (cond
-                  (:cd d) (cd state d)
-                  (:dir d) (dir state d)))]
-
-  (map ()creator data))
-
-
 ;;(update-in {:a {:b "test"}} [:a] #(cons % "a" ))
 
 (let [state sample-state1
@@ -184,10 +168,6 @@
 (+ 14848514
    8504156)
 
-(defn size-of-files-in-dir
-  [dir]
-  (reduce + (map :size
-                 (filter :file (:content dir)))))
 
 
 (size-of-files-in-dir (first (:content sample-data1)))
@@ -210,14 +190,26 @@
                     (:dir d) (dir state d)
                     (:file d) (file state d)
                     :else state))
-      ]
-  ;; Build state from input
-  (loop [input all-input 
-         state init-state]
-    (if (empty? input)
-      state ; done
-      (recur
-       (rest input)
-       (build-dir state (first input))))))
+
+
+      size-of-files-in-dir (fn size-of-files-in-dir
+                             [d]
+                             (reduce + (map :size (filter :size (vals d)))))
+
+      filesystem (:filesystem (loop [input all-input 
+                                     state init-state]
+                                (if (empty? input)
+                                  state ; done
+                                  (recur
+                                   (rest input)
+                                   (build-dir state (first input))))))
+
+      root (get-in filesystem [:/])]; -> i file
+
+  (= 
+   (+
+    14848514
+    8504156)
+   (size-of-files-in-dir root)))
 
 
