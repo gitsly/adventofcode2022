@@ -76,7 +76,7 @@
    d]
   (let [dir (:cd d)
         cwd (:cwd state)]
-    (println (string/join (map name (:cwd state)))"> cd" dir )
+    ;;    (println (string/join (map name (:cwd state)))"> cd" dir )
     (update (if (= ".." dir)
               (update state :cwd #(pop %))
               (-> state
@@ -190,7 +190,7 @@ keys)
 
 
 ;; Part 1
-(let [all-input (->> (utils/get-lines "resources/7_input.txt")
+(let [all-input (->> (utils/get-lines "resources/7_input_full.txt")
                      (map #(parse-line input-data %)))
 
       init-state initial-state
@@ -229,14 +229,14 @@ keys)
 
       test-size (size-of-dir (get-in filesystem [:/ :d]))
 
-      dirs (:dirs processed)]
+      dirs (:dirs processed)
+      dir-sizes (map (fn[d]
+                       {:dir d :size (size-of-dir (get-in filesystem d))})
+                     dirs)]
+  (reduce + 
+          (map :size
+               (filter #(<= (:size %) 100000) dir-sizes))))
 
-
-  ;; (tree-seq map? vals filesystem)
-
-  (map (fn[d]
-         {d (size-of-dir (get-in filesystem d))})
-       dirs))
 
 
 
