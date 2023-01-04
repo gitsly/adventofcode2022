@@ -2,7 +2,8 @@
   (:require [clojure.java.io :as io]
             [utils.utils :as utils]
             [clojure.string :as string]
-            [clojure.set :as set])
+            [clojure.set :as set]
+            [clojure.walk :as walk])
   (:gen-class))
 
 (comment "
@@ -63,10 +64,11 @@
 (when-let [test (:command (parse-line input-data "cd /"))]
   test) 
 
-(def initial-state {:cwd [] :note "initial state"} )
+(def initial-state {:cwd [] :note "initial state" :counter 0 } )
 (def sample-state1 {:cwd [] :note "sample state 1"} )
 (def sample-dir (parse-line input-data "dir a"))
 (def sample-file (parse-line input-data "62596 h.lst"))
+(def sample-file2 (parse-line input-data "213 j.lst"))
 
 (println sample-dir)
 (println sample-file)
@@ -76,7 +78,9 @@
    dir]
   (if (= ".." dir)
     (update state :cwd #(pop %))
-    (update state :cwd #(conj % dir))))
+    (-> state
+        (update :cwd #(conj % (keyword dir)))
+        (assoc :content []))))
 
 
 (defn ls
@@ -87,21 +91,36 @@
 (defn file
   [state
    f]
-  state)
+  (let [a (:cwd state)])
+  (update-in state [:content ]  #(conj % f)))
+
 
 (defn dir
   [state
    d]
   state)
 
+;; Test some seqential state shifting
+(-> initial-state
+    (cd "/")
+    ls
+    (dir sample-dir)
+    (file sample-file)
+    (file sample-file2)
+    (cd "another")
+    ls)
+
+
+
+
 (let [state sample-state1
       content []
 
       cwd (:cwd state)
       dirs (:dirs state)]
-  (if (empty? cwd)
-    state
-    (update state :dirs #(merge % { cwd content }))))
+(if (empty? cwd)
+  state
+  (update state :dirs #(merge % { cwd content }))))
 
 (def sample-data1
   {:dir "/"
@@ -111,36 +130,48 @@
                         {:file "c.dat" :size 8504156 }
                         ]}]})
 
+(def sample-data2
+  {:/
+   [{:a
+     [{:e []}
+      "f" "g" "h.lst"]}
+    "b.txt", "c.dat"
+    {:d
+     []}]})
+
+;; This structure should work nice with built in 
+(def sample-data3
+  {:/ [{:a [{:e [{:file "i" :size 584}]}
+            {:file "f" :size 29116}
+            {:file "g" :size 29116}
+            {:file "h.lst" :size 29116}]}
+       {:file "b.txt" :size 14848514}
+       {:file "c.dat" :size 8504156}
+       {:d [{:file "j" :size 4060174}
+            {:file "d.log" :size 8033020}
+            {:file "d.ext" :size 5626152}
+            {:file "k" :size 7214296}]}]})
+
+(get-in sample-data3 [:/ :a :e]); not working
+
+(walk/prewalk-demo sample-data3)
 
 (+ 14848514
-   8504156)
+8504156)
 
 (defn size-of-files-in-dir
-  [dir]
-  (reduce + (map :size
-                 (filter :file (:content dir)))))
+[dir]
+(reduce + (map :size
+               (filter :file (:content dir)))))
+
 
 (size-of-files-in-dir (first (:content sample-data1)))
 
 
-;; unsure if this could be useful
-(tree-seq :dir #(:file %) {:dir "/"
-                           :content [{:file "b.txt" :size 14848514 }
-                                     {:dir "a"
-                                      :content [{:dir "e" }
-                                                {:file "b.txt" :size 14848514 }]}]}))
+
+
                                         ; Total size of Dir 'a
 (+ 584 29116 2557 62596)
-
-;; Test some seqential state shifting
-(-> initial-state
-(cd "/")
-ls
-(dir sample-dir)
-(file sample-file)
-(cd "another")
-ls)
-
 
 ;;(= sample-state1 (cd (cd sample-state1 "heppas") "..")) ;-> true
 
@@ -165,18 +196,22 @@ ls)
 
 ;; Part 1
 (let [all-input (->> (utils/get-lines "resources/7_input.txt")
-                     (map #(parse-line input-data %)))
+                     (map #(parse-line input-data %))
+                     (take 10))
+
       init-state initial-state
       build-dir (fn [state
                      data]
-
-
-                  state)]
+                  (-> state
+                      (update :counter inc)
+                      (update :data #(conj data %))))]
 ;; Build state from input
 (loop [input all-input 
        state init-state]
-  (if(empty? input)
-    state
-    (recur (rest input) (build-dir state (first input))))))
+  (cond
+    (empty? input) state ; done
+    :else (recur
+           (rest input)
+           (build-dir state (first input))))))
 
 
