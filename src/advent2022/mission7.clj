@@ -139,8 +139,7 @@
     {:d
      []}]})
 
-;; This structure should work nice with built in 
-(def sample-data3
+(def sample-data3a
   {:/ [{:a [{:e [{:file "i" :size 584}]}
             {:file "f" :size 29116}
             {:file "g" :size 29116}
@@ -152,7 +151,17 @@
             {:file "d.ext" :size 5626152}
             {:file "k" :size 7214296}]}]})
 
-(get-in sample-data3 [:/ :a :e]); not working
+;; This structure should work nice with built in 
+(def sample-data3
+  {:/ 
+   {:a
+    {"d.log" {:size 8033020}}
+    "d.ext" {:size 5626152}
+    "k" {:size 7214296}}})
+
+(keys (:/ sample-data3))
+
+(get-in sample-data3 [:/ :a]); working
 
 (walk/prewalk-demo sample-data3)
 
