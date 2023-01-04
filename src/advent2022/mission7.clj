@@ -88,46 +88,29 @@
 (defn file
   [state
    f]
-  (let [cwd (:cwd state)
-        filesystem (:filesystem state)]
-    (update-in state (concat [:filesystem])
-               #(merge % {:testish "apa"})))
-  )
+  (let [path (concat [:filesystem] (:cwd state))]
+    (update-in state path
+               #(merge % {(:file f) {:size (:size f)}}))))
 
-(concat [:filesystem] [:a :b] )
-
-(defn dir
-  [state
-   d]
-  state)
+(defn dir [state
+           dir]
+  (let [path (concat [:filesystem] (:cwd state))]
+    (update-in state path
+               #(merge % {(keyword (:dir dir)) {}}))))
 
 ;; Test some seqential state shifting
-(let [file (fn file
-             [state
-              f]
-             (let [path (concat [:filesystem] (:cwd state))]
-               (update-in state path
-                          #(merge % {(:file f) {:size (:size f)}}))))
-      dir (fn dir [state
-                   dir]
-            (let [path (concat [:filesystem] (:cwd state))]
-              (update-in state path
-                         #(merge % {(keyword (:dir dir)) {}}))))
-      ]
 
-  (-> initial-state
-      (cd "/")
-      ls
-      (dir sample-dir)
-      (file sample-file)
-      (file sample-file2)
-      (cd "a")
-      (file {:file "testfile.txt" :size 1231})
-      ls
+(-> initial-state
+    (cd "/")
+    ls
+    (dir sample-dir)
+    (file sample-file)
+    (file sample-file2)
+    (cd "a")
+    (file {:file "testfile.txt" :size 1231})
+    ls
 
-      :filesystem)
-
-  )
+    :filesystem)
 
 
 ;;(update-in {:a {:b "test"}} [:a] #(cons % "a" ))
