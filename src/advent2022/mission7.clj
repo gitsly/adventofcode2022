@@ -32,14 +32,12 @@
 
                  {:regex #"dir (.*)"
                   :transform (fn [input]
-                               (when-let [[_ arg] input] {:dir arg
-                                                          :content []}))}
+                               (when-let [[_ arg] input] {:dir arg }))}
 
                  {:regex #"(\d*) (.*)"
                   :transform (fn [input]
                                (when-let [[_ size file] input] {:file file
                                                                 :size (utils/as-integer size)}))}
-
                  ])
 
 (defn first-not-nil
@@ -64,7 +62,7 @@
 (when-let [test (:command (parse-line input-data "cd /"))]
   test) 
 
-(def initial-state {:cwd [] :note "initial state" :counter 0 } )
+(def initial-state {:cwd [] :note "initial state" :counter 0 :filesystem {} } )
 (def sample-state1 {:cwd [] :note "sample state 1"} )
 (def sample-dir (parse-line input-data "dir a"))
 (def sample-file (parse-line input-data "62596 h.lst"))
@@ -79,8 +77,7 @@
   (if (= ".." dir)
     (update state :cwd #(pop %))
     (-> state
-        (update :cwd #(conj % (keyword dir)))
-        (assoc :content []))))
+        (update :cwd #(conj % (keyword dir))))))
 
 
 (defn ls
@@ -91,9 +88,13 @@
 (defn file
   [state
    f]
-  (let [a (:cwd state)])
-  (update-in state [:content ]  #(conj % f)))
+  (let [cwd (:cwd state)
+        filesystem (:filesystem state)]
+    (update-in state (concat [:filesystem])
+               #(merge % {:testish "apa"})))
+  )
 
+(concat [:filesystem] [:a :b] )
 
 (defn dir
   [state
@@ -101,17 +102,35 @@
   state)
 
 ;; Test some seqential state shifting
-(-> initial-state
-    (cd "/")
-    ls
-    (dir sample-dir)
-    (file sample-file)
-    (file sample-file2)
-    (cd "another")
-    ls)
+(let [file (fn file
+             [state
+              f]
+             (let [path (concat [:filesystem] (:cwd state))]
+               (update-in state path
+                          #(merge % {(:file f) {:size (:size f)}}))))
+      dir (fn dir [state
+                   dir]
+            (let [path (concat [:filesystem] (:cwd state))]
+              (update-in state path
+                         #(merge % {(keyword (:dir dir)) {}}))))
+      ]
+
+  (-> initial-state
+      (cd "/")
+      ls
+      (dir sample-dir)
+      (file sample-file)
+      (file sample-file2)
+      (cd "a")
+      (file {:file "testfile.txt" :size 1231})
+      ls
+
+      :filesystem)
+
+  )
 
 
-
+;;(update-in {:a {:b "test"}} [:a] #(cons % "a" ))
 
 (let [state sample-state1
       content []
@@ -121,14 +140,6 @@
   (if (empty? cwd)
     state
     (update state :dirs #(merge % { cwd content }))))
-
-(def sample-data1
-  {:dir "/"
-   :content [{:dir "a"
-              :content [{:dir "e" }
-                        {:file "b.txt" :size 14848514 }
-                        {:file "c.dat" :size 8504156 }
-                        ]}]})
 
 ;; This structure should work nice with built in 
 (def sample-data {
@@ -168,15 +179,14 @@
 (tree-seq map? vals sample-data)
 
 
-(walk/prewalk-demo sample-data3)
 
 (+ 14848514
-8504156)
+   8504156)
 
 (defn size-of-files-in-dir
-[dir]
-(reduce + (map :size
-               (filter :file (:content dir)))))
+  [dir]
+  (reduce + (map :size
+                 (filter :file (:content dir)))))
 
 
 (size-of-files-in-dir (first (:content sample-data1)))
