@@ -165,6 +165,9 @@
 
 (count (get-in sample-data [:/ :d])); -> 4 files
 
+(tree-seq map? vals sample-data)
+
+
 (walk/prewalk-demo sample-data3)
 
 (+ 14848514
