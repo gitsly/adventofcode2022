@@ -73,11 +73,13 @@
 
 (defn cd 
   [state
-   dir]
-  (if (= ".." dir)
-    (update state :cwd #(pop %))
-    (-> state
-        (update :cwd #(conj % (keyword dir))))))
+   d]
+  (let [dir (:cd d)]
+    (println "cd" dir)
+    (if (= ".." dir)
+      (update state :cwd #(pop %))
+      (-> state
+          (update :cwd #(conj % (keyword dir)))))))
 
 
 (defn ls
@@ -101,16 +103,32 @@
 ;; Test some seqential state shifting
 
 (-> initial-state
-    (cd "/")
+    (cd {:cd "/"})
     ls
     (dir sample-dir)
     (file sample-file)
     (file sample-file2)
-    (cd "a")
+    (cd {:cd "a"})
     (file {:file "testfile.txt" :size 1231})
     ls
 
     :filesystem)
+
+
+(let [lines ["$ cd /"
+             "$ ls"
+             "dir a"
+             "14848514 b.txt"
+             "8504156 c.dat"]
+      data (map #(parse-line input-data %) lines)
+      creator (fn creator
+                [state
+                 d]
+                (cond
+                  (:cd d) (cd state d)
+                  (:dir d) (dir state d)))]
+
+  (map ()creator data))
 
 
 ;;(update-in {:a {:b "test"}} [:a] #(cons % "a" ))
@@ -176,49 +194,30 @@
 
 
 
-
-                                        ; Total size of Dir 'a
-(+ 584 29116 2557 62596)
-
-;;(= sample-state1 (cd (cd sample-state1 "heppas") "..")) ;-> true
-
-
-;; possible to use list as a key into map
-;;(get { ["a" "b"] 1 } ["a" "b"] )
-
-(let [data (->> (utils/get-lines "resources/7_input.txt")
-                (map #(parse-line input-data %)))
-      spl (split-with #(:command %) data)
-      commands (map :command spl)
-
-      [commands dtr] spl]
-
-(->>
- {:commands commands
-  :dtr (take-while #(:data %) dtr) }
- :dtr
- count))
-
-
-
 ;; Part 1
 (let [all-input (->> (utils/get-lines "resources/7_input.txt")
                      (map #(parse-line input-data %))
-                     (take 10))
+                     ;;(take 6)
+                     )
 
       init-state initial-state
-      build-dir (fn [state
-                     data]
-                  (-> state
-                      (update :counter inc)
-                      (update :data #(conj data %))))]
-;; Build state from input
-(loop [input all-input 
-       state init-state]
-  (cond
-    (empty? input) state ; done
-    :else (recur
-           (rest input)
-           (build-dir state (first input))))))
+
+      build-dir (fn build-dir
+                  [state
+                   d]
+                  (cond
+                    (:cd d) (cd state d)
+                    (:dir d) (dir state d)
+                    (:file d) (file state d)
+                    :else state))
+      ]
+  ;; Build state from input
+  (loop [input all-input 
+         state init-state]
+    (if (empty? input)
+      state ; done
+      (recur
+       (rest input)
+       (build-dir state (first input))))))
 
 
