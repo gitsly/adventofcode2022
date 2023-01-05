@@ -8,7 +8,6 @@
 
 
 ;; Moves
-
 (defn vsub
   [a b]
   (vec
@@ -25,34 +24,45 @@
   (Math/sqrt (+ (exp (v 0) 2)
                 (exp (v 1) 2))))
 
-(def diag-len (vlen [1 1])) ; Length of a diagonal
 
 
 (defn exp [x n]
   (reduce * (repeat n x)))
 
+(defn move
+  [state
+   move-id]
+  (let [T (:T state)
+        H (:H state)
+        tail-fn (fn
+                  [H T move]
+                  (cond
+                    (> (vlen (vsub H T)) diag-len) (let [T-next (vadd T move)]
+                                                     (cond
+                                                       (> (abs (move 0)) 0) [(T-next 0) (H 1)] ; horiz move (ensure same y)
+                                                       ;; else: vertical move (ensure same x)
+                                                       :else [(H 0) (T-next 1)]) 
+                                                     )
+                    :else T)) ; No need to move Tail.
+        diag-len (vlen [1 1]) ; Length of a diagonal
+        moves {:U [0 -1]
+               :D [0  1]
+               :R [1  0]
+               :L [-1 0]}]
 
-(let [T [0, 1]
-      H [1, 0]
-      tail-fn (fn
-                [H T move]
-                (cond
-                  (> (vlen (vsub H T)) diag-len) (let [T-next (vadd T move)]
-                                                   (cond
-                                                     (> (abs (move 0)) 0) [(T-next 0) (H 1)] ; horiz move (ensure same y)
-                                                     :else [(H 0) (T-next 1)]) ; vertical move (ensure same x)
-                                                   )
-                  :else T)) ; No need to move Tail.
+    (let [H-next (vadd H (move-id moves))] 
+      {:H H-next
+       :T (tail-fn H-next T (move-id moves)) })))
 
-      move-id :R
-      moves {:U [0 -1]
-             :D [0  1]
-             :R [1  0]
-             :L [-1 0]}]
 
-  (let [H-next (vadd H (move-id moves))] 
-    {:H H-next
-     :T (tail-fn H-next T (move-id moves)) }))  
+(-> {:H [0 0]
+     :T [0 0]}
+
+    (move  :R)
+    (move  :R)
+    (move  :D)
+    (move  :D)
+    )
 
 
 ;; Solution
