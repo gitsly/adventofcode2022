@@ -15,7 +15,7 @@
 ;; Note original 'any?' in clojure is always 'true' (constant pred.)
 (defn any? [pred col] (not (not-any? pred col)))
 
-(let [grid (vec (map parse-line (utils/get-lines "resources/8_input.txt")))
+(let [grid (vec (map parse-line (utils/get-lines "resources/8_input_full.txt")))
       side (count grid)
       column (fn
                [col]
@@ -46,10 +46,11 @@
    (filter :visible 
            (map tree-check-fn tree-situation))))
 
+;; Part1 -> 1776
 
 
 (comment
-"--- Day 8: Treetop Tree House ---
+  "--- Day 8: Treetop Tree House ---
 The expedition comes across a peculiar patch of tall trees all planted
 carefully in a grid. The Elves explain that a previous expedition
 planted these trees as a reforestation effort. Now, they're curious if
