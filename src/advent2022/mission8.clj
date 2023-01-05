@@ -50,25 +50,29 @@
                                (any? #(tree-check-one-dir % (:height tree) ) tree-checks))))
       
       sample-tree (let [x 2
-                        y 3
+                        y 1
                         i (+ x (* side y))]
-                    (select-keys ((vec tree-situation) i) [:vr :vl :vd :vt :height]))]
+                    (select-keys ((vec tree-situation) i) [:vr :vl :vd :vt :height]))
 
+      view-one-dir (fn
+                     [trees
+                      height]
+                     (count 
+                      (take (inc
+                             (count
+                              (take-while #(< % height) trees))) trees)))
+
+      scenic-score (fn
+                     [tree]
+                     (let [visuals (vals (select-keys tree [:vr :vl :vd :vt]))
+                           height (:height tree)]
+                       (reduce * (map #(view-one-dir % height) visuals))))
+      ]
+
+  ;; Part I solution
   ;; (count (filter :visible (map tree-check-fn tree-situation)))
-  ;;(map #(select-keys % [:vt :vl :vd :vt]) tree-situation)
-  (let [tree sample-tree
-        visuals (vals (select-keys tree [:vr :vl :vd :vt]))
-        height (:height tree)]
 
-    [height visuals])
-
-  (let [trees [3 4 5 1]
-        height 5]
-    (count 
-     (take (inc
-            (count
-             (take-while #(< % height) trees))) trees)))
-
+  (scenic-score sample-tree)
 
   )
 ;; Part1 -> 1776
