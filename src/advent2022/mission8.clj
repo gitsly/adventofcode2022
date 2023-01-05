@@ -13,12 +13,25 @@
     (utils/as-integer (str d))))
 
 
+;; gives a sequence from a traversion
+(loop [row [4 4 2]
+       max -1
+       res []]
+  (let [tree (first row)]
+    (println tree)
+    (if (or (nil? tree) (<= tree max))
+      res ; Done, all trees traversed, or lower tree
+      (recur (rest row) tree (conj res tree)) ; New highest tree in direction found.
+      ))) 
+
 
 (let [grid (map parse-line (utils/get-lines "resources/8_input.txt"))]
-  grid)
+
+
+)
 
 (comment
-  "--- Day 8: Treetop Tree House ---
+"--- Day 8: Treetop Tree House ---
 The expedition comes across a peculiar patch of tall trees all planted
 carefully in a grid. The Elves explain that a previous expedition
 planted these trees as a reforestation effort. Now, they're curious if
