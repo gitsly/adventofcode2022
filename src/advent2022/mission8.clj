@@ -6,45 +6,47 @@
             [clojure.walk :as walk])
   (:gen-class))
 
-
 (defn parse-line
   [line]
-  (for [d line]
-    (utils/as-integer (str d))))
+  (vec
+   (for [d line]
+     (utils/as-integer (str d)))))
+
+;; Note original 'any?' in clojure is always 'true' (constant pred.)
+(defn any? [pred col] (not (not-any? pred col)))
+
+(let [grid (vec (map parse-line (utils/get-lines "resources/8_input.txt")))
+      side (count grid)
+      column (fn
+               [col]
+               (vec (for [r (range side)]
+                      ((grid r) col))))
+      tree-situation (for [y (range side)
+                           x (range side)]
+                       {:height ((grid y) x) 
+                        :x x
+                        :y y
+                        :lr (take x (grid y)) ; left to right
+                        :rl (reverse (drop (inc x) (grid y))) ; right to left
+                        :td (take y (column x)) ; top down 
+                        :dt (reverse (drop (inc y) (column x)))})
+
+      tree-check-one-dir (fn[trees
+                             tree]
+                           (every? #(> tree %) trees))
+
+      tree-check-fn (fn
+                      [tree]
+                      (let [tree-checks [(:lr tree ) (:rl tree) (:td tree) (:dt tree)]]
+                        ;; (every? #(tree-check-one-dir % tree) tree-checks)
+                        (assoc tree :visible 
+                               (any? #(tree-check-one-dir % (:height tree) ) tree-checks))))]
+
+  (count
+   (filter :visible 
+           (map tree-check-fn tree-situation))))
 
 
-;; gives a sequence from a traversion
-(loop [row [2 5]
-       max -1
-       res []]
-  (let [tree (first row)]
-    (if (or (nil? tree) (<= tree max))
-      res ; Done, all trees traversed, or lower tree
-      (recur (rest row) tree (conj res tree)) ; New highest tree in direction found.
-      ))) 
-
-;; only need to find max tree in passed seq.
-(let [trees [3 5] ; potentially blocking trees  to centre tree, top down
-      tree 3 ; My (centre tree) height
-      ]
-  (every? #(> tree %) trees))
-
-
-;; For tree (0,0)
-3 0 3 7 3  ; Left to right
-3 7 3 0 3  ; Right to left
-3 2 6 
-
-30373
-25512
-65332
-33549
-35390
-
-(let [grid (map parse-line (utils/get-lines "resources/8_input.txt"))]
-
-
-  )
 
 (comment
 "--- Day 8: Treetop Tree House ---
