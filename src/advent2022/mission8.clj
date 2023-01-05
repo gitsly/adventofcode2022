@@ -14,21 +14,37 @@
 
 
 ;; gives a sequence from a traversion
-(loop [row [4 4 2]
+(loop [row [2 5]
        max -1
        res []]
   (let [tree (first row)]
-    (println tree)
     (if (or (nil? tree) (<= tree max))
       res ; Done, all trees traversed, or lower tree
       (recur (rest row) tree (conj res tree)) ; New highest tree in direction found.
       ))) 
 
+;; only need to find max tree in passed seq.
+(let [trees [3 5] ; potentially blocking trees  to centre tree, top down
+      tree 3 ; My (centre tree) height
+      ]
+  (every? #(> tree %) trees))
+
+
+;; For tree (0,0)
+3 0 3 7 3  ; Left to right
+3 7 3 0 3  ; Right to left
+3 2 6 
+
+30373
+25512
+65332
+33549
+35390
 
 (let [grid (map parse-line (utils/get-lines "resources/8_input.txt"))]
 
 
-)
+  )
 
 (comment
 "--- Day 8: Treetop Tree House ---
