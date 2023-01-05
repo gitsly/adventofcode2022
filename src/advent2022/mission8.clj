@@ -69,11 +69,11 @@
                        (reduce * (map #(view-one-dir % height) visuals))))
       ]
 
-  ;; Part I solution
-  ;; (count (filter :visible (map tree-check-fn tree-situation)))
-
-  (scenic-score sample-tree)
-
+  {
+   ;; Part I solution
+   :visible-tree-count (count (filter :visible (map tree-check-fn tree-situation)))
+   ;; Part II
+   :best-scenic-score (apply max (map scenic-score tree-situation)) }
   )
 ;; Part1 -> 1776
 
