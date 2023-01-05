@@ -15,7 +15,7 @@
 ;; Note original 'any?' in clojure is always 'true' (constant pred.)
 (defn any? [pred col] (not (not-any? pred col)))
 
-(let [grid (vec (map parse-line (utils/get-lines "resources/8_input.txt")))
+(let [grid (vec (map parse-line (utils/get-lines "resources/8_input_full.txt")))
       side (count grid)
       column (fn
                [col]
