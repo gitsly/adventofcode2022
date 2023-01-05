@@ -188,54 +188,71 @@ keys)
 (size-of-files-in-dir (first (:content sample-data1)))
 
 
+;; Part 1 & 2
+(println 
+ (let [all-input (concat  (->> (utils/get-lines "resources/7_input_full.txt")
+                               (map #(parse-line input-data %))) [{:cd "dummy"}])
 
-;; Part 1
-(let [all-input (->> (utils/get-lines "resources/7_input.txt")
-                     (map #(parse-line input-data %)))
+       old-bad (->> (utils/get-lines "resources/7_input.txt")
+                    (map #(parse-line input-data %))) 
 
-      init-state initial-state
+       init-state initial-state
 
-      build-dir (fn build-dir
-                  [state
-                   d]
-                  (cond
-                    (:cd d) (cd state d)
-                    (:dir d) (dir state d)
-                    (:file d) (file state d)
-                    :else state))
+       build-dir (fn build-dir
+                   [state
+                    d]
+                   (cond
+                     (:cd d) (cd state d)
+                     (:dir d) (dir state d)
+                     (:file d) (file state d)
+                     :else state))
 
 
-      size-of-files-in-dir (fn size-of-files-in-dir
-                             [d]
-                             (reduce + (map :size (filter :size (vals d)))))
+       size-of-files-in-dir (fn size-of-files-in-dir
+                              [d]
+                              (reduce + (map :size (filter :size (vals d)))))
 
-      processed  (loop [input all-input 
-                        state init-state]
-                   (if (empty? input)
-                     state ; done
-                     (recur
-                      (rest input)
-                      (build-dir state (first input)))))
+       processed  (loop [input all-input 
+                         state init-state]
+                    (if (empty? input)
+                      state ; done
+                      (recur
+                       (rest input)
+                       (build-dir state (first input)))))
 
-      filesystem (:filesystem processed)
+       filesystem (:filesystem processed)
 
-      size-of-dir (fn [d]
-                    (reduce + 
-                            (->>
-                             (filter #(:size %) (tree-seq map? vals d) )
-                             (map :size))))
+       size-of-dir (fn [d]
+                     (reduce + 
+                             (->>
+                              (filter #(:size %) (tree-seq map? vals d) )
+                              (map :size))))
 
-      root (get-in filesystem [:/])
+       root (get-in filesystem [:/])
 
-      test-size (size-of-dir (get-in filesystem [:/ :d]))
+       test-size (size-of-dir (get-in filesystem [:/ :d]))
 
-      dirs (:dirs processed)
-      dir-sizes (map (fn[d]
-                       {:dir d :size (size-of-dir (get-in filesystem d))})
-                     dirs)]
-  (reduce + 
-          (map :size
-               (filter #(<= (:size %) 100000) dir-sizes))))
+       dirs (:dirs processed)
+       dir-sizes (map (fn[d]
+                        {:dir d :size (size-of-dir (get-in filesystem d))})
+                      dirs)
+
+       part1-solution (reduce + 
+                              (map :size
+                                   (filter #(<= (:size %) 100000) dir-sizes)))
+
+       allocated (:size (first (filter #(= [:/] (:dir %)) dir-sizes)))
+
+       total-space    70000000 
+       required-space 30000000
+       free-space     (- total-space allocated)] 
+
+   (apply min 
+          (map :size (filter #(>= (+ free-space (:size %))
+                                  required-space)
+                             dir-sizes)))
+   ))
+
 
 
 
