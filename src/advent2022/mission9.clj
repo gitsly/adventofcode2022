@@ -6,6 +6,25 @@
             [clojure.walk :as walk])
   (:gen-class))
 
+
+;; Moves
+
+(defn vdiff
+  [a b]
+  (vec
+   (map - a b)))
+
+(let [s [0, 0]
+      H s
+      T [1, 1]
+      diff (vdiff H T)
+
+      move :U]
+
+  )  
+
+
+;; Solution
 (let [lines (utils/get-lines "resources/9_input.txt")
       parse-line (fn
                    [line]
