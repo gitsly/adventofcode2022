@@ -7,11 +7,6 @@
   (:gen-class))
 
 
-(zipmap 
- ['a 'b 'c]
- (take 3 (range)))
-
-
 (defn parse-line
   [line]
   (for [d line]
@@ -37,11 +32,14 @@ row or column.
 The Elves have already launched a quadcopter to generate a map with
 the height of each tree (your puzzle input). For example:
 
+
 30373
-25512
-65332
-33549
+25512  (5 5)
+65332  (5 3)
+33549  (5)
 35390
+
+16+5 = 21
 
 Each tree is represented as a single
 digit whose value is its height, where 0 is the shortest and 9 is the
@@ -61,11 +59,15 @@ from the right or bottom since other trees of height 5 are in the
 way.)  The top-middle 5 is visible from the top and right.  The
 top-right 1 is not visible from any direction; for it to be visible,
 there would need to only be trees of height 0 between it and an edge.
-The left-middle 5 is visible, but only from the right.  The center 3
-is not visible from any direction; for it to be visible, there would
-need to be only trees of at most height 2 between it and an edge.  The
-right-middle 3 is visible from the right.  In the bottom row, the
+
+The left-middle 5 is visible, but only from the right.
+The center 3 is not visible from any direction; for it to be visible, there would
+need to be only trees of at most height 2 between it and an edge.
+The right-middle 3 is visible from the right.
+
+In the bottom row, the
 middle 5 is visible, but the 3 and 4 are not.  With 16 trees visible
+
 on the edge and another 5 visible in the interior, a total of 21 trees
 are visible in this arrangement.
 
