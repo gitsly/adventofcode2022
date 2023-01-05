@@ -15,7 +15,7 @@
 ;; Note original 'any?' in clojure is always 'true' (constant pred.)
 (defn any? [pred col] (not (not-any? pred col)))
 
-(let [grid (vec (map parse-line (utils/get-lines "resources/8_input_full.txt")))
+(let [grid (vec (map parse-line (utils/get-lines "resources/8_input.txt")))
       side (count grid)
       column (fn
                [col]
@@ -29,7 +29,14 @@
                         :lr (take x (grid y)) ; left to right
                         :rl (reverse (drop (inc x) (grid y))) ; right to left
                         :td (take y (column x)) ; top down 
-                        :dt (reverse (drop (inc y) (column x)))})
+                        :dt (reverse (drop (inc y) (column x)))
+
+                        ;; Part II
+                        :vr (drop (inc x) (grid y)); View Right
+                        :vl (reverse (take x  (grid y))) ; View Left
+                        :vd (drop (inc y) (column x)); View down
+                        :vt (reverse (take y  (column x))) ; View Up (top)
+                        })
 
       tree-check-one-dir (fn[trees
                              tree]
@@ -42,9 +49,8 @@
                         (assoc tree :visible 
                                (any? #(tree-check-one-dir % (:height tree) ) tree-checks))))]
 
-  (count
-   (filter :visible 
-           (map tree-check-fn tree-situation))))
+  ;; (count (filter :visible (map tree-check-fn tree-situation)))
+  (map :vt tree-situation))
 
 ;; Part1 -> 1776
 
