@@ -32,16 +32,19 @@
   (reduce * (repeat n x)))
 
 
-(let [H [0, 1]
-      T [0, 0]
-
+(let [T [0, 1]
+      H [1, 0]
       tail-fn (fn
                 [H T move]
                 (cond
-                  (> (vlen (vsub H T)) diag-len) (vadd T move)
+                  (> (vlen (vsub H T)) diag-len) (let [T-next (vadd T move)]
+                                                   (cond
+                                                     (> (abs (move 0)) 0) [(T-next 0) (H 1)] ; horiz move (ensure same y)
+                                                     :else [(H 0) (T-next 1)]) ; vertical move (ensure same x)
+                                                   )
                   :else T)) ; No need to move Tail.
 
-      move-id :D
+      move-id :R
       moves {:U [0 -1]
              :D [0  1]
              :R [1  0]
