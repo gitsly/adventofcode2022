@@ -68,13 +68,20 @@
 
 
 ;; Solution
-(let [lines (utils/get-lines "resources/9_input.txt")
+(let [lines (utils/get-lines "resources/9_input_full.txt")
       parse-line (fn
                    [line]
                    (let [[_ cmd cnt] (re-matches #"(.*) (\d*)" line)]
                      (repeat  (utils/as-integer cnt) (keyword cmd))))
 
-      moves (flatten (map parse-line lines))]
-
-  moves)
+      all-moves (flatten (map parse-line lines))
+      final-state (loop [state {:H [0 0]
+                                :T [0 0]
+                                :T-history #{[0 0]} }
+                         moves all-moves]
+                    (if (nil? (first moves))
+                      state
+                      (recur (move state (first moves)) (rest moves))))]
+  (count
+   (:T-history final-state)))
 
