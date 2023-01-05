@@ -34,6 +34,7 @@
    move-id]
   (let [T (:T state)
         H (:H state)
+        history (:T-history state)
         tail-fn (fn
                   [H T move]
                   (cond
@@ -50,14 +51,15 @@
                :R [1  0]
                :L [-1 0]}]
 
-    (let [H-next (vadd H (move-id moves))] 
+    (let [H-next (vadd H (move-id moves))
+          T-next (tail-fn H-next T (move-id moves))] 
       {:H H-next
-       :T (tail-fn H-next T (move-id moves)) })))
-
+       :T T-next
+       :T-history (conj history T-next) })))
 
 (-> {:H [0 0]
-     :T [0 0]}
-
+     :T [0 0]
+     :T-history #{[0 0]} }
     (move  :R)
     (move  :R)
     (move  :D)
