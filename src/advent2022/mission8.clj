@@ -6,6 +6,22 @@
             [clojure.walk :as walk])
   (:gen-class))
 
+
+(zipmap 
+ ['a 'b 'c]
+ (take 3 (range)))
+
+
+(defn parse-line
+  [line]
+  (for [d line]
+    (utils/as-integer (str d))))
+
+
+
+(let [grid (map parse-line (utils/get-lines "resources/8_input.txt"))]
+  grid)
+
 (comment
   "--- Day 8: Treetop Tree House ---
 The expedition comes across a peculiar patch of tall trees all planted
