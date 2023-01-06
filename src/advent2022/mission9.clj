@@ -25,36 +25,55 @@
                 (exp (v 1) 2))))
 
 (reduce (fn[a
-            b]
-          (println a b)
+            b
+            c]
+          (+ a b))
+        [1 2 3] 'c)
 
-          (vadd 
-           a
-           b))
+(let [input [1 2 3 4]]
+  (reduce (fn [i [a b]]
+            (cond
+              (and (even? a) (even? b)) (inc i)
+              (and (odd? a) (odd? b))   (dec i)
+              :else i))
+          0
+          (partition 2 1 input)))
 
-        [[1 0]
-         [0 2]
-         [1 2]])
+;; Demo partition
+(let [input [1 2 3 4]
+      step 1
+      size 2]
+  (partition size step input))
+
+;; reduce with initial 'val'
+(let [input [3 4]
+      step 1
+      size 2
+      val 2]
+  (reduce (fn add
+            [a b]
+            (println a "+" b \= (+ a b))
+            (+ a b)) val input))
 
 
 ;; maybe use reduce? 
 (defn apply-with-prev
-"applies fn taking two parameters with prev item in coll for every item in coll"
-[fn
- coll]
-(loop [c coll
-       prev nil
-       res []]
-  (if (empty? c)
-    res
-    (recur (rest c)
-           (first c)
-           (conj res (fn (first c) prev))))))
+  "applies fn taking two parameters with prev item in coll for every item in coll"
+  [fn
+   coll]
+  (loop [c coll
+         prev nil
+         res []]
+    (if (empty? c)
+      res
+      (recur (rest c)
+             (first c)
+             (conj res (fn (first c) prev))))))
 
 
 
 (defn exp [x n]
-  (reduce * (repeat n x)))
+(reduce * (repeat n x)))
 
 (def motions {:U [0 -1]
               :D [0  1]
@@ -63,20 +82,20 @@
 
 
 (defn move
-  [H ; 2d vec (head)
-   T ; 2D vec (tail)
-   v]
-  (let [diag-len (vlen [1 1]) ; Length of a diagonal
-        H (vadd H v); update H with vector
-        ]
-    (cond
-      (> (vlen (vsub H T)) diag-len) (let [T-next (vadd T v)]
-                                       (cond
-                                         (> (abs (v 0)) 0) [(T-next 0) (H 1)] ; horiz move (ensure same y)
-                                         ;; else: vertical move (ensure same x)
-                                         :else [(H 0) (T-next 1)]))
-      :else T; No need to move Tail.
-      ))) 
+[H ; 2d vec (head)
+ T ; 2D vec (tail)
+ v]
+(let [diag-len (vlen [1 1]) ; Length of a diagonal
+      H (vadd H v); update H with vector
+      ]
+  (cond
+    (> (vlen (vsub H T)) diag-len) (let [T-next (vadd T v)]
+                                     (cond
+                                       (> (abs (v 0)) 0) [(T-next 0) (H 1)] ; horiz move (ensure same y)
+                                       ;; else: vertical move (ensure same x)
+                                       :else [(H 0) (T-next 1)]))
+    :else T; No need to move Tail.
+    ))) 
 
 
 (move [2 -1] [1 0] [0 -1]) ; Hmm, if moving, tail seems to always end up in previous Head position.
