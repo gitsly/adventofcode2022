@@ -24,20 +24,7 @@
   (Math/sqrt (+ (exp (v 0) 2)
                 (exp (v 1) 2))))
 
-(reduce (fn[a
-            b
-            c]
-          (+ a b))
-        [1 2 3] 'c)
 
-(let [input [1 2 3 4]]
-  (reduce (fn [i [a b]]
-            (cond
-              (and (even? a) (even? b)) (inc i)
-              (and (odd? a) (odd? b))   (dec i)
-              :else i))
-          0
-          (partition 2 1 input)))
 
 ;; Demo partition
 (let [input [1 2 3 4]
@@ -56,24 +43,9 @@
             (+ a b)) val input))
 
 
-;; maybe use reduce? 
-(defn apply-with-prev
-  "applies fn taking two parameters with prev item in coll for every item in coll"
-  [fn
-   coll]
-  (loop [c coll
-         prev nil
-         res []]
-    (if (empty? c)
-      res
-      (recur (rest c)
-             (first c)
-             (conj res (fn (first c) prev))))))
-
-
-
 (defn exp [x n]
-(reduce * (repeat n x)))
+  (reduce * (repeat n x)))
+
 
 (def motions {:U [0 -1]
               :D [0  1]
@@ -81,25 +53,26 @@
               :L [-1 0]})
 
 
+;; Hmm, if moving, tail seems to always end up in previous Head position.
 (defn move
-[H ; 2d vec (head)
- T ; 2D vec (tail)
- v]
-(let [diag-len (vlen [1 1]) ; Length of a diagonal
-      H (vadd H v); update H with vector
-      ]
-  (cond
-    (> (vlen (vsub H T)) diag-len) (let [T-next (vadd T v)]
-                                     (cond
-                                       (> (abs (v 0)) 0) [(T-next 0) (H 1)] ; horiz move (ensure same y)
-                                       ;; else: vertical move (ensure same x)
-                                       :else [(H 0) (T-next 1)]))
-    :else T; No need to move Tail.
-    ))) 
+  [new ; new head pos
+   old ; old head pos (before applying vector for a move)
+   tail]
+  (let [diag-len (vlen [1 1])]
+    (if (> (vlen (vsub new tail)) diag-len) 
+      old
+      tail))) 
 
 
-(move [2 -1] [1 0] [0 -1]) ; Hmm, if moving, tail seems to always end up in previous Head position.
+(let [head [2 -1]
+      tail [1 0]
+      dir [0 -1]]
+  (move (vadd head dir) head tail))
 
+(let [head [1 0]
+      tail [0 0]
+      dir [0 -1]]
+  (move (vadd head dir) head tail))
 
 ;; Solution
 (let [lines (utils/get-lines "resources/9_input_full.txt")
