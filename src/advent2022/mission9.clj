@@ -25,16 +25,29 @@
                 (exp (v 1) 2))))
 
 
+(defn apply-with-prev
+  "applies fn taking two parameters with prev item in coll for every item in coll"
+  [fn
+   coll]
+  (loop [c coll
+         prev nil
+         res []]
+    (if (empty? c)
+      res
+      (recur (rest c)
+             (first c)
+             (conj res (fn (first c) prev))))))
+
+
 
 (defn exp [x n]
   (reduce * (repeat n x)))
 
 (defn move
-  [state
+  [H ; 2d vec (head)
+   T ; 2D vec (tail)
    move-id]
-  (let [T (:T state)
-        H (:H state)
-        history (:T-history state)
+  (let [
         tail-fn (fn
                   [H T move]
                   (cond
@@ -53,9 +66,9 @@
 
     (let [H-next (vadd H (move-id moves))
           T-next (tail-fn H-next T (move-id moves))] 
-      {:H H-next
-       :T T-next
-       :T-history (conj history T-next) })))
+      [H-next T-next] )))
+
+
 
 ;; Solution
 (let [lines (utils/get-lines "resources/9_input_full.txt")
@@ -66,15 +79,22 @@
 
       all-moves (flatten (map parse-line lines))
 
-      all-moves [:R :R]
+      all-moves [:R]
 
       move-all (fn [state
                     m]
-                 (move state m)
+                 ;; (move state m)
+                 (update state :knots 
+                         #(apply-with-prev (fn[tail
+                                               head]
+                                             (println "Head:" head "Tail:" tail))
+                                           %))
+
                  )
 
+      knot-count 2
 
-      final-state (loop [state {:knots (repeat 10 [0 0])
+      final-state (loop [state {:knots (repeat knot-count [0 0])
                                 :T-history #{[0 0]} }
                          moves all-moves]
                     (if (nil? (first moves))
@@ -87,23 +107,10 @@
                               (:T-history final-state))
       ]
 
-  )
-
-(defn apply-with-prev
-  "applies fn taking two parameters with prev item in coll for every item in coll"
-  [fn
-   coll]
-  (loop [c coll
-         prev nil
-         res []]
-    (if (empty? c)
-      res
-      (recur (rest c)
-             (first c)
-             (conj res (fn (first c) prev))))))
+  final-state)
 
 (let [test  [1 2 3 4]]
-  (apply-with-prev (fn[i prev]
-                     {:i i
-                      :prev prev })
-                   test))
+(apply-with-prev (fn[i prev]
+                   {:i i
+                    :prev prev })
+                 test))
