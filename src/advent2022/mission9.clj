@@ -57,16 +57,6 @@
        :T T-next
        :T-history (conj history T-next) })))
 
-(-> {:H [0 0]
-     :T [0 0]
-     :T-history #{[0 0]} }
-    (move  :R)
-    (move  :R)
-    (move  :D)
-    (move  :D)
-    )
-
-
 ;; Solution
 (let [lines (utils/get-lines "resources/9_input_full.txt")
       parse-line (fn
@@ -75,13 +65,45 @@
                      (repeat  (utils/as-integer cnt) (keyword cmd))))
 
       all-moves (flatten (map parse-line lines))
-      final-state (loop [state {:H [0 0]
-                                :T [0 0]
+
+      all-moves [:R :R]
+
+      move-all (fn [state
+                    m]
+                 (move state m)
+                 )
+
+
+      final-state (loop [state {:knots (repeat 10 [0 0])
                                 :T-history #{[0 0]} }
                          moves all-moves]
                     (if (nil? (first moves))
                       state
-                      (recur (move state (first moves)) (rest moves))))]
-  (count
-   (:T-history final-state)))
+                      (recur
+                       (move-all state (first moves))
+                       (rest moves))))
 
+      tail-visited-positions (count
+                              (:T-history final-state))
+      ]
+
+  )
+
+(defn apply-with-prev
+  "applies fn taking two parameters with prev item in coll for every item in coll"
+  [fn
+   coll]
+  (loop [c coll
+         prev nil
+         res []]
+    (if (empty? c)
+      res
+      (recur (rest c)
+             (first c)
+             (conj res (fn (first c) prev))))))
+
+(let [test  [1 2 3 4]]
+  (apply-with-prev (fn[i prev]
+                     {:i i
+                      :prev prev })
+                   test))
