@@ -63,16 +63,43 @@
       old
       tail))) 
 
-
 (let [head [2 -1]
       tail [1 0]
-      dir [0 -1]]
-  (move (vadd head dir) head tail))
+      dir [0 -1]
+      tail-new (move (vadd head dir) head tail)
+      tail-move-vec (vsub 
+                     tail-new 
+                     tail)]
+  tail-move-vec)
 
 (let [head [1 0]
       tail [0 0]
       dir [0 -1]]
   (move (vadd head dir) head tail))
+
+
+;; Initial
+....
+..H.
+21..
+
+;; 1 neeed to follow H
+..H.
+....
+21..
+
+;; ?NEW? head movement (diagonal), 1 being the head., This doesnt allow for the T taking old H's position whenever needing to move rule..
+..H.
+..1.
+2...
+
+;; 2 will follow the 1 
+..H.
+.21.
+....
+
+;; Above, the 2 is following the 1 in a new 'motion'
+
 
 ;; Solution
 (let [lines (utils/get-lines "resources/9_input_full.txt")
