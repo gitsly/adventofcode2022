@@ -18,6 +18,14 @@
   (vec
    (map + a b)))
 
+(defn vcap
+  "Cap vector at max 1 or min -1"
+  [v]
+  (vec
+   (map #(cond
+           (> % 0) (min 1 %)
+           :else (max -1 %)) v)))
+
 (defn vlen
   "Calculates length of vector"
   [v]
@@ -53,54 +61,56 @@
               :L [-1 0]})
 
 
-(defn move
-  [H T] ;2x 2D vectors
-  (let [tail-fn (fn
-                  [H T move]
-                  (let [diag-len (vlen [1 1])]
-                    (cond
-                      (> (vlen (vsub H T)) diag-len) (let [T-next (vadd T move)]
-                                                       (cond
-                                                         (> (abs (move 0)) 0) [(T-next 0) (H 1)] ; horiz move (ensure same y)
-                                                         ;; else: vertical move (ensure same x)
-                                                         :else [(H 0) (T-next 1)]) 
-                                                       )
-                      :else T))) ; No need to move Tail.
-        moves {:U [0 -1]
-               :D [0  1]
-               :R [1  0]
-               :L [-1 0]}]
 
-    (let [v [0 0] ; vector of move direction.
-          T-next (tail-fn (vadd H v) T v)] 
-      T-next)))
-
-;; Hmm, if moving, tail seems to always end up in previous Head
-;; position. -> Not true in Part II, where head can be moved
-;; diagonally in relation to next 'T'
-(defn move
-[new ; new head pos
- old ; old head pos (before applying vector for a move)
- tail]
-(let [diag-len (vlen [1 1])]
-  (if (> (vlen (vsub new tail)) diag-len) 
-    old
-    tail))) 
-
-(let [head [2 -1]
+(let [head [2 0]
       tail [1 0]
-      dir [0 -1]
-      tail-new (move (vadd head dir) head tail)
-      tail-move-vec (vsub 
-                     tail-new 
-                     tail)]
-tail-move-vec)
 
-(let [head [1 0]
-      tail [0 0]
-      dir [0 -1]]
-(move (vadd head dir) head tail))
+      move (fn move
+             [H T] ;2x 2D vectors
+             (let [tail-fn (fn
+                             ;; head, tail, move-vector
+                             [H T v]
+                             (let [diag-len (vlen [1 1])]
+                               (cond
+                                 (> (vlen (vsub H T)) diag-len) (let [T-next (vadd T v)]
+                                                                  (cond
+                                                                    (> (abs (v 0)) 0) [(T-next 0) (H 1)] ; horiz move (ensure same y)
+                                                                    ;; else: vertical move (ensure same x)
+                                                                    :else [(H 0) (T-next 1)]) 
+                                                                  )
+                                 :else T)))]
 
+               (let [v (vsub T H); vector of move direction for tail to follow H.
+                     T-next (tail-fn (vadd H v) T v)] 
+                 T-next
+                 )))
+      ]
+  (move head tail))
+
+T.
+.*
+.H
+;; Get next tail pos (in relation to H)
+(let [T [0 0]
+      H [0 2]
+
+      v (vcap (vsub H T))
+      diag-len (vlen [1 1])
+      T-next (vadd T v)]
+  (println v)
+  (if (> (vlen (vsub H T)) diag-len)
+    (do
+      (println "Follow")
+      (if (> (abs (v 0)) 0)
+        (do
+          (println "a")
+          [(T-next 0) (H 1)])
+        (do
+          (println "b")
+          [(H 0) (T-next 1)]))) 
+    (do
+      (println "done")
+      T)))
 
 ;; Initial
 ....
