@@ -92,12 +92,12 @@ T.
 .H
 ;; Get next tail pos (in relation to H)
 (let [T [0 0]
-      H [0 2]
+      H [1 2]
 
       v (vcap (vsub H T))
       diag-len (vlen [1 1])
       T-next (vadd T v)]
-  (println v)
+  (println T "+" v "-> " (vadd T v))
   (if (> (vlen (vsub H T)) diag-len)
     (do
       (println "Follow")
