@@ -53,15 +53,39 @@
               :L [-1 0]})
 
 
-;; Hmm, if moving, tail seems to always end up in previous Head position.
 (defn move
-  [new ; new head pos
-   old ; old head pos (before applying vector for a move)
-   tail]
-  (let [diag-len (vlen [1 1])]
-    (if (> (vlen (vsub new tail)) diag-len) 
-      old
-      tail))) 
+  [H T] ;2x 2D vectors
+  (let [tail-fn (fn
+                  [H T move]
+                  (let [diag-len (vlen [1 1])]
+                    (cond
+                      (> (vlen (vsub H T)) diag-len) (let [T-next (vadd T move)]
+                                                       (cond
+                                                         (> (abs (move 0)) 0) [(T-next 0) (H 1)] ; horiz move (ensure same y)
+                                                         ;; else: vertical move (ensure same x)
+                                                         :else [(H 0) (T-next 1)]) 
+                                                       )
+                      :else T))) ; No need to move Tail.
+        moves {:U [0 -1]
+               :D [0  1]
+               :R [1  0]
+               :L [-1 0]}]
+
+    (let [v [0 0] ; vector of move direction.
+          T-next (tail-fn (vadd H v) T v)] 
+      T-next)))
+
+;; Hmm, if moving, tail seems to always end up in previous Head
+;; position. -> Not true in Part II, where head can be moved
+;; diagonally in relation to next 'T'
+(defn move
+[new ; new head pos
+ old ; old head pos (before applying vector for a move)
+ tail]
+(let [diag-len (vlen [1 1])]
+  (if (> (vlen (vsub new tail)) diag-len) 
+    old
+    tail))) 
 
 (let [head [2 -1]
       tail [1 0]
@@ -70,12 +94,12 @@
       tail-move-vec (vsub 
                      tail-new 
                      tail)]
-  tail-move-vec)
+tail-move-vec)
 
 (let [head [1 0]
       tail [0 0]
       dir [0 -1]]
-  (move (vadd head dir) head tail))
+(move (vadd head dir) head tail))
 
 
 ;; Initial
