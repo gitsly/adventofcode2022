@@ -84,8 +84,26 @@
 
 ;;(move [[2 0] [1 0] [0 0]] [1 0])
 
+;; 
+
+(let [knots [[2 -2] [1 -2] [0 -2] [1 -2] [2 -2] [3 -2] [4 -2] [5 -2] [5 -3] [4 -3]]
+      min-x  (apply min (map first knots))
+      max-x  (apply max (map first knots))
+      min-y  (apply min (map second knots))
+      max-y  (apply max (map second knots))
+      span-x (- max-x min-x)
+      span-y (- max-y min-y)
+      points (zipmap (reverse knots)
+                     (map char (range (int \0) (+ (int \0) 10))))]
+  (for [y (range span-y)
+        x (range span-x)]
+    [x y])
+
+  points ))
+
+
 ;; Solution
-(let [lines (utils/get-lines "resources/9_input_full.txt")
+(let [lines (utils/get-lines "resources/9_input.txt")
       parse-line (fn
                    [line]
                    (let [[_ cmd cnt] (re-matches #"(.*) (\d*)" line)]
@@ -119,7 +137,10 @@
 
       tail-visited-positions (count
                               (:T-history final-state))]
-  tail-visited-positions)
+  ;; tail-visited-positions
+  (:knots final-state)
+
+  )
 
 
 ;; PartII 7053 too high
