@@ -85,42 +85,47 @@
 ;;(move [[2 0] [1 0] [0 0]] [1 0])
 
 ;; 
+(def sample-knots [[4 2] [4 1] [4 0] [3 0] [2 0]
+                   [1 0] [0 0] [0 0] [0 0] [0 0]])
 
-(let [knots [[4 2] [4 1] [4 0] [3 0] [2 0]
-             [1 0] [0 0] [0 0] [0 0] [0 0]]
+(defn draw-knots
+  ([knots]
+   (draw-knots knots [(apply min (map first knots))
+                      (apply max (map first knots))
+                      (apply min (map second knots))
+                      (apply max (map second knots))]))
+  ([knots boundaries]
+   (let [[min-x  
+          max-x  
+          min-y  
+          max-y] boundaries
 
-      min-x  (apply min (map first knots))
-      max-x  (apply max (map first knots))
-      min-y  (apply min (map second knots))
-      max-y  (apply max (map second knots))
+         ;;      span-x (- max-x min-x)
+         ;;      span-y (- max-y min-y)
+         points (zipmap (reverse knots)
+                        (reverse
+                         (cons \H (map char (range (int \1) (+ (int \0) 10))))))
 
-      min-x 0 
-      max-x 4
-      min-y 0 
-      max-y 4
+         xrange (range min-x (inc max-x))
+         yrange (reverse (range min-y (inc max-y)))
 
-      ;;      span-x (- max-x min-x)
-      ;;      span-y (- max-y min-y)
-      points (zipmap (reverse knots)
-                     (reverse
-                      (cons \H (map char (range (int \1) (+ (int \0) 10))))))
+         toprint (for [y yrange
+                       x xrange]
+                   ;;{[x y]}
+                   (if (nil? (get points [x y]))
+                     \.
+                     (get points [x y])))]
+     ;; (range min-x (inc max-x))
+     (map println  
+          (map #(apply str %) (partition (count xrange) toprint)))
 
-      xrange (range min-x (inc max-x))
-      yrange (reverse (range min-y (inc max-y)))
+     )))
 
-      toprint (for [y yrange
-                    x xrange]
-                ;;{[x y]}
-                (if (nil? (get points [x y]))
-                  \.
-                  (get points [x y])))]
-  ;; (range min-x (inc max-x))
-  (map println  
-       (map #(apply str %) (partition (count xrange) toprint)))
-
-  )
-
-
+(draw-knots sample-knots 
+            [0 
+             4
+             0 
+             4])
 
 
 ;; Solution
@@ -158,10 +163,10 @@
 
       tail-visited-positions (count
                               (:T-history final-state))]
-;; tail-visited-positions
-(:knots final-state)
+  ;; tail-visited-positions
+  (:knots final-state)
 
-)
+  )
 
 
 ;; PartII 7053 too high
