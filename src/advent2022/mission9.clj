@@ -27,26 +27,26 @@
            :else (max -1 %)) v)))
 
 (defn apply-with-prev
-  "applies fn taking two parameters with prev item in coll for every item in coll"
-  [fn
-   coll]
-  (loop [c coll
-         prev nil
-         res []]
-    (if (empty? c)
-      res
-      (recur (rest c)
-             (first c)
-             (conj res (fn (first c) prev))))))
+  "applies fn(prev-res,i) item in coll for every item in coll
+  where the prev-res is the result of the prev fn call"
+  ([fn
+    coll]
+   (apply-with-prev fn nil coll))
+  ([fn
+    init
+    coll]
+   (loop [c coll
+          prev init
+          res []]
+     (if (empty? c)
+       res
+       (let [r (fn prev (first c))]
+         (recur (rest c)
+                r
+                (conj res r)))))))
 
-
-(defn vlen
-  "Calculates length of vector"
-  [v]
-  (Math/sqrt (+ (exp (v 0) 2)
-                (exp (v 1) 2))))
-
-
+(apply-with-prev (fn[a b](+ a b))
+                 0 [0 1 2 3 4 5])
 
 ;; Demo partition
 (let [input [1 2 3 4]
@@ -107,23 +107,17 @@
         diag-len (vlen [1 1])
         T-next (vadd T v)
         result (if (> (vlen (vsub H T)) diag-len)
-      (if (> (abs (v 0)) 0)
-        [(T-next 0) (H 1)]
-        [(H 0) (T-next 1)]) 
-      T)]
+                 (if (> (abs (v 0)) 0)
+                   [(T-next 0) (H 1)]
+                   [(H 0) (T-next 1)]) 
+                 T)]
     (println "Head:" H "Tail:" T "->" result)
     result))
 
 
-(tail-move-fn [2 0] [1 0])
 
-(let [data [[0 0]
-            [1 0]
-            [2 0]]]
-  (apply #(tail-move-fn (first %1) (first %2)) 
-         (partition 2 1 data))))
 
-(partition 2 1 [1 2 3 4])
+(tail-move-fn [-2 0] [0 0])
 
 ;; Initial
 ....
@@ -190,4 +184,4 @@
                               (:T-history final-state))
       ]
 
-all-moves )
+  all-moves )
