@@ -48,26 +48,8 @@
 (apply-with-prev (fn[a b](+ a b))
                  0 [0 1 2 3 4 5])
 
-;; Demo partition
-(let [input [1 2 3 4]
-      step 1
-      size 2]
-  (partition size step input))
-
-;; reduce with initial 'val'
-(let [input [3 4]
-      step 1
-      size 2
-      val 2]
-  (reduce (fn add
-            [a b]
-            (println a "+" b \= (+ a b))
-            (+ a b)) val input))
-
-
 (defn exp [x n]
   (reduce * (repeat n x)))
-
 
 (def motions {:U [0 -1]
               :D [0  1]
@@ -114,6 +96,15 @@
     (println "Head:" H "Tail:" T "->" result)
     result))
 
+
+
+(defn move2)
+(let [head [0 0]
+      tail [0 0]
+      v    [1 0]
+      new-head (vadd head v)]
+  (cons new-head
+        (drop-last (apply-with-prev tail-move-fn new-head [head tail]))))
 
 
 
@@ -184,4 +175,4 @@
                               (:T-history final-state))
       ]
 
-  all-moves )
+all-moves )
