@@ -98,17 +98,16 @@
 
 
 
-(defn move2)
-(let [head [0 0]
-      tail [0 0]
-      v    [1 0]
-      new-head (vadd head v)]
-  (cons new-head
-        (drop-last (apply-with-prev tail-move-fn new-head [head tail]))))
+(defn move2
+  [coll
+   v]
+  (let [head (first coll)
+        tail (last coll)
+        new-head (vadd head v)]
+    (cons new-head
+          (drop-last (apply-with-prev tail-move-fn new-head [head tail])))))
 
-
-
-(tail-move-fn [-2 0] [0 0])
+(move2 [[0 0] [0 0]] [1 0])
 
 ;; Initial
 ....
