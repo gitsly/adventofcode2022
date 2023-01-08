@@ -56,33 +56,6 @@
               :R [1  0]
               :L [-1 0]})
 
-
-
-(let [head [2 0]
-      tail [1 0]
-
-      move (fn move
-             [H T] ;2x 2D vectors
-             (let [tail-fn (fn
-                             ;; head, tail, move-vector
-                             [H T v]
-                             (let [diag-len (vlen [1 1])]
-                               (cond
-                                 (> (vlen (vsub H T)) diag-len) (let [T-next (vadd T v)]
-                                                                  (cond
-                                                                    (> (abs (v 0)) 0) [(T-next 0) (H 1)] ; horiz move (ensure same y)
-                                                                    ;; else: vertical move (ensure same x)
-                                                                    :else [(H 0) (T-next 1)]) 
-                                                                  )
-                                 :else T)))]
-
-               (let [v (vsub T H); vector of move direction for tail to follow H.
-                     T-next (tail-fn (vadd H v) T v)] 
-                 T-next
-                 )))
-      ]
-  (move head tail))
-
 (defn tail-move-fn
   [H T]
   (let [v (vcap (vsub H T))
@@ -97,8 +70,7 @@
     result))
 
 
-
-(defn move2
+(defn move
   [coll
    v]
   (let [head (first coll)
@@ -106,34 +78,10 @@
         new-head (vadd head v)]
     (cons new-head
           (drop-last (apply-with-prev tail-move-fn new-head [head tail])))))
-
-(move2 [[0 0] [0 0]] [1 0])
-
-;; Initial
-....
-..H.
-21..
-
-;; 1 neeed to follow H
-..H.
-....
-21..
-
-;; ?NEW? head movement (diagonal), 1 being the head., This doesnt allow for the T taking old H's position whenever needing to move rule..
-..H.
-..1.
-2...
-
-;; 2 will follow the 1 
-..H.
-.21.
-....
-
-;; Above, the 2 is following the 1 in a new 'motion'
-
+;;(move2 [[0 0] [0 0]] [1 0])
 
 ;; Solution
-(let [lines (utils/get-lines "resources/9_input_full.txt")
+(let [lines (utils/get-lines "resources/9_input.txt")
       parse-line (fn
                    [line]
                    (let [[_ cmd cnt] (re-matches #"(.*) (\d*)" line)]
@@ -145,19 +93,7 @@
 
       move-all (fn [state
                     m]
-                 (update state :knots 
-                         #(apply-with-prev (fn[tail
-                                               head]
-                                             (println "Head:" head "Tail:" tail)
-                                             (if (nil? head)
-                                               :head
-                                               ((move head tail m) 1))
-
-                                             )
-
-                                           %))
-
-                 )
+                 (update state :knots #(move % m)))
 
       knot-count 2
 
@@ -174,4 +110,4 @@
                               (:T-history final-state))
       ]
 
-all-moves )
+  final-state)
