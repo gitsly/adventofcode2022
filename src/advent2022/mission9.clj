@@ -89,11 +89,15 @@
 
       all-moves (map motions (flatten (map parse-line lines)))
 
-      all-moves (map motions [:R])
+      ;; Test moves
+      ;;all-moves (map motions [:R :R:R])
 
       move-all (fn [state
                     m]
                  (update state :knots #(move % m)))
+
+      update-history (fn [state]
+                       (update state :T-history #(conj % (last (:knots state)))))
 
       knot-count 2
 
@@ -103,11 +107,12 @@
                     (if (nil? (first moves))
                       state
                       (recur
-                       (move-all state (first moves))
+                       (update-history
+                        (move-all state (first moves)))
                        (rest moves))))
 
       tail-visited-positions (count
                               (:T-history final-state))
       ]
 
-  final-state)
+  tail-visited-positions)
