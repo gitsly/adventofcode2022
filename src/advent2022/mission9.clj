@@ -86,15 +86,22 @@
 
 ;; 
 
-(let [knots [[2 -2] [1 -2] [0 -2] [1 -2] [2 -2] [3 -2] [4 -2] [5 -2] [5 -3] [4 -3]]
+(let [knots [[1 0] [0 0] [0 0] [0 0] [0 0]
+             [0 0] [0 0] [0 0] [0 0] [0 0]]
       min-x  (apply min (map first knots))
       max-x  (apply max (map first knots))
       min-y  (apply min (map second knots))
       max-y  (apply max (map second knots))
+
+      min-x 0 
+      max-x 4
+      min-y 0 
+      max-y 4
+
       ;;      span-x (- max-x min-x)
       ;;      span-y (- max-y min-y)
-      points (zipmap knots
-                     (map char (cons \H (range (int \1) (+ (int \0) 9)))))
+      points (zipmap (reverse knots)
+                     (reverse (map char (cons \H (range (int \1) (+ (int \0) 9))))))
 
       xrange (range min-x (inc max-x))
       yrange (reverse (range min-y (inc max-y)))
