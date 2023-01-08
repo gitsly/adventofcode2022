@@ -26,6 +26,15 @@
            (> % 0) (min 1 %)
            :else (max -1 %)) v)))
 
+(defn exp [x n]
+  (reduce * (repeat n x)))
+
+(defn vlen
+  "Calculates length of vector"
+  [v]
+  (Math/sqrt (+ (exp (v 0) 2)
+                (exp (v 1) 2))))
+
 (defn apply-with-prev
   "applies fn(prev-res,i) item in coll for every item in coll
   where the prev-res is the result of the prev fn call"
@@ -45,11 +54,6 @@
                 r
                 (conj res r)))))))
 
-(apply-with-prev (fn[a b](+ a b))
-                 0 [0 1 2 3 4 5])
-
-(defn exp [x n]
-  (reduce * (repeat n x)))
 
 (def motions {:U [0 -1]
               :D [0  1]
@@ -66,7 +70,7 @@
                    [(T-next 0) (H 1)]
                    [(H 0) (T-next 1)]) 
                  T)]
-    (println "Head:" H "Tail:" T "->" result)
+    ;;(println "Head:" H "Tail:" T "->" result)
     result))
 
 
@@ -76,12 +80,12 @@
   (let [head (first coll)
         tail (last coll)
         new-head (vadd head v)]
-    (cons new-head
-          (drop-last (apply-with-prev tail-move-fn new-head [head tail])))))
-;;(move2 [[0 0] [0 0]] [1 0])
+    (drop-last (cons new-head (apply-with-prev tail-move-fn new-head coll)))))
+
+;;(move [[2 0] [1 0] [0 0]] [1 0])
 
 ;; Solution
-(let [lines (utils/get-lines "resources/9_input.txt")
+(let [lines (utils/get-lines "resources/9_input_full.txt")
       parse-line (fn
                    [line]
                    (let [[_ cmd cnt] (re-matches #"(.*) (\d*)" line)]
@@ -90,16 +94,18 @@
       all-moves (map motions (flatten (map parse-line lines)))
 
       ;; Test moves
-      ;;all-moves (map motions [:R :R:R])
+      ;;      all-moves (map motions [:R :R])
+
+      knot-count 10
 
       move-all (fn [state
                     m]
                  (update state :knots #(move % m)))
 
       update-history (fn [state]
+                       ;;(println "Tail: " (last (:knots state)))
                        (update state :T-history #(conj % (last (:knots state)))))
 
-      knot-count 2
 
       final-state (loop [state {:knots (repeat knot-count [0 0])
                                 :T-history #{[0 0]} }
@@ -112,7 +118,8 @@
                        (rest moves))))
 
       tail-visited-positions (count
-                              (:T-history final-state))
-      ]
-
+                              (:T-history final-state))]
   tail-visited-positions)
+
+
+;; PartII 7053 too high
