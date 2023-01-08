@@ -91,15 +91,26 @@
       max-x  (apply max (map first knots))
       min-y  (apply min (map second knots))
       max-y  (apply max (map second knots))
-      span-x (- max-x min-x)
-      span-y (- max-y min-y)
-      points (zipmap (reverse knots)
-                     (map char (range (int \0) (+ (int \0) 10))))]
-  (for [y (range span-y)
-        x (range span-x)]
-    [x y])
+      ;;      span-x (- max-x min-x)
+      ;;      span-y (- max-y min-y)
+      points (zipmap knots
+                     (map char (cons \H (range (int \1) (+ (int \0) 9)))))
 
-  points ))
+      xrange (range min-x (inc max-x))
+      yrange (reverse (range min-y (inc max-y)))
+
+      toprint (for [y yrange
+                    x xrange]
+                ;;{[x y]}
+                (if (nil? (get points [x y]))
+                  \.
+                  (get points [x y])))]
+  ;; (range min-x (inc max-x))
+
+  (map println  
+       (map #(apply str %) (partition (count xrange) toprint)))))
+
+
 
 
 ;; Solution
@@ -137,10 +148,10 @@
 
       tail-visited-positions (count
                               (:T-history final-state))]
-  ;; tail-visited-positions
-  (:knots final-state)
+;; tail-visited-positions
+(:knots final-state)
 
-  )
+)
 
 
 ;; PartII 7053 too high
