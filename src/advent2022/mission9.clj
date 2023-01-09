@@ -3,7 +3,8 @@
             [utils.utils :as utils]
             [clojure.string :as string]
             [clojure.set :as set]
-            [clojure.walk :as walk])
+            [clojure.walk :as walk]
+            [advent2022.mission9moves :as mission9moves])
   (:gen-class))
 
 
@@ -76,58 +77,72 @@
     result))
 
 
+;; How tail follows head
+(let [H [2 0]
+      T [0 0]
+      v (vsub H T)
+      vx (v 0)
+      vy (v 1)
+      move-map (zipmap (map :org mission9moves/move-info)
+                       (map :vec mission9moves/move-info))]
+  (cond (and (< vx -1)) :follow-left
+        (and (> vx 1)) :follow-right
+        :else 'else))
+
+
+
 (defn move
-  [coll
-   v]
-  (let [head (first coll)
-        tail (last coll)
-        new-head (vadd head v)]
-    (cons new-head (apply-with-prev tail-move-fn new-head (rest coll)))))
+[coll
+ v]
+(let [head (first coll)
+      tail (last coll)
+      new-head (vadd head v)]
+  (cons new-head (apply-with-prev tail-move-fn new-head (rest coll)))))
 
 
 (println 
- (draw-knots 
-  (move
+(draw-knots 
+ (move
                                         ;[[1 0] [0 0]]
-   [[4 0] [3 0] [2 0]]
-   [0 -1]) sample-grid))
+  [[4 0] [3 0] [2 0]]
+  [0 -1]) sample-grid))
 ;; 
 
 (defn draw-knots
-  ([knots]
-   (draw-knots knots [(apply min (map first knots))
-                      (apply max (map first knots))
-                      (apply min (map second knots))
-                      (apply max (map second knots))]))
-  ([knots boundaries]
-   (let [[min-x  
-          max-x  
-          min-y  
-          max-y] boundaries
+([knots]
+ (draw-knots knots [(apply min (map first knots))
+                    (apply max (map first knots))
+                    (apply min (map second knots))
+                    (apply max (map second knots))]))
+([knots boundaries]
+ (let [[min-x  
+        max-x  
+        min-y  
+        max-y] boundaries
 
-         ;;      span-x (- max-x min-x)
-         ;;      span-y (- max-y min-y)
-         points (zipmap (reverse knots)
-                        (reverse
+       ;;      span-x (- max-x min-x)
+       ;;      span-y (- max-y min-y)
+       points (zipmap (reverse knots)
+                      (reverse
 
-                         (take (count knots)
-                               (cons \H (map char (range (int \1) (+ (int \0) 10)))))))
+                       (take (count knots)
+                             (cons \H (map char (range (int \1) (+ (int \0) 10)))))))
 
-         xrange (range min-x (inc max-x))
-         yrange (reverse (range min-y (inc max-y)))
+       xrange (range min-x (inc max-x))
+       yrange (reverse (range min-y (inc max-y)))
 
-         toprint (for [y yrange
-                       x xrange]
-                   ;;{[x y]}
-                   (if (nil? (get points [x y]))
-                     \.
-                     (get points [x y])))]
-     ;; (range min-x (inc max-x))
-     (doall
-      (map println  
-           (reverse (map #(apply str %) (partition (count xrange) toprint)))))
+       toprint (for [y yrange
+                     x xrange]
+                 ;;{[x y]}
+                 (if (nil? (get points [x y]))
+                   \.
+                   (get points [x y])))]
+   ;; (range min-x (inc max-x))
+   (doall
+    (map println  
+         (reverse (map #(apply str %) (partition (count xrange) toprint)))))
 
-     knots)))
+   knots)))
 
 
 (def sample-knots [[4 2] [4 1] [4 0] [3 0] [2 0]
