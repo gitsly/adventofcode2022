@@ -64,48 +64,30 @@
   [0 6 -4 0])
 
 (defn tail-move-fn
+  "How tail follows head"
   [H T]
-  (let [v (vcap (vsub H T))
-        diag-len (vlen [1 1])
-        T-next (vadd T v)
-        result (if (> (vlen (vsub H T)) diag-len)
-                 (if (> (abs (v 0)) 0)
-                   [(T-next 0) (H 1)]
-                   [(H 0) (T-next 1)]) 
-                 T)]
-    (println "Head:" H "Tail:" T "->" result)
-    result))
-
-
-;; How tail follows head
-(let [H [2 0]
-      T [0 0]
-      v (vsub H T)
-      vx (v 0)
-      vy (v 1)
-      move-map (zipmap (map :org mission9moves/move-info)
-                       (map :vec mission9moves/move-info))]
-  (cond (and (< vx -1)) :follow-left
-        (and (> vx 1)) :follow-right
-        :else 'else))
-
-
+  (let [move-map (zipmap (map :org mission9moves/move-info)
+                         (map :vec mission9moves/move-info))
+        v (get move-map (vsub T H))]
+    ;;    (println "org:" (vsub T H) "v:" v)
+    (if (nil? v)
+      T
+      (vadd T v))))
 
 (defn move
-[coll
- v]
-(let [head (first coll)
-      tail (last coll)
-      new-head (vadd head v)]
-  (cons new-head (apply-with-prev tail-move-fn new-head (rest coll)))))
+  [coll
+   v]
+  (let [head (first coll)
+        tail (last coll)
+        new-head (vadd head v)]
+    (cons new-head (apply-with-prev tail-move-fn new-head (rest coll)))))
 
 
-(println 
 (draw-knots 
  (move
-                                        ;[[1 0] [0 0]]
-  [[4 0] [3 0] [2 0]]
-  [0 -1]) sample-grid))
+  [[4 -1] [3 -2]]
+  [0 1])
+ sample-grid)
 ;; 
 
 (defn draw-knots
@@ -172,7 +154,10 @@
       ;; Test moves
       ;; all-moves (map motions [:R :R :R :U]) ; Problematic draw.
       ;;      all-moves (map motions [:D :D]) ; Problematic draw.
-      all-moves (map motions [:R :R :R :R :U])
+      all-moves (map motions [:R :R :R :R
+                              :U :U :U :U
+                              :L :L])
+
 
       final-state (loop [state {:knots (repeat knot-count [0 0])
                                 :T-history #{[0 0]} }

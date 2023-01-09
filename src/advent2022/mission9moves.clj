@@ -6,6 +6,8 @@
             [clojure.walk :as walk])
   (:gen-class))
 
+H..
+..T
 
 (def move-info 
   [{:org [0 -2] ; org is from H (centre 0 0) to T
@@ -49,7 +51,7 @@
 .....
 ....."}
    {:org [2 1] ; org is from H (centre 0 0) to T
-    :vec [0 0] ; vector needed to move 'T' inorder to follow 'H'
+    :vec [-1 -1] ; vector needed to move 'T' inorder to follow 'H'
     :comment "
 .....
 .....
@@ -73,7 +75,7 @@
 .....
 ...T."}
    {:org [0 2] ; org is from H (centre 0 0) to T
-    :vec [-1 -1] ; vector needed to move 'T' inorder to follow 'H'
+    :vec [0 -1] ; vector needed to move 'T' inorder to follow 'H'
     :comment "
 .....
 .....
