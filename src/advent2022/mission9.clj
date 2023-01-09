@@ -54,11 +54,13 @@
                 r
                 (conj res r)))))))
 
-
 (def motions {:U [0 -1]
               :D [0  1]
               :R [1  0]
               :L [-1 0]})
+
+(def sample-grid
+  [0 6 -4 0])
 
 (defn tail-move-fn
   [H T]
@@ -70,7 +72,7 @@
                    [(T-next 0) (H 1)]
                    [(H 0) (T-next 1)]) 
                  T)]
-    ;;(println "Head:" H "Tail:" T "->" result)
+    (println "Head:" H "Tail:" T "->" result)
     result))
 
 
@@ -80,10 +82,11 @@
   (let [head (first coll)
         tail (last coll)
         new-head (vadd head v)]
-    (drop-last (cons new-head (apply-with-prev tail-move-fn new-head coll)))))
+    (cons new-head (apply-with-prev tail-move-fn new-head (rest coll)))))
 
-;;(move [[2 0] [1 0] [0 0]] [1 0])
-
+(draw-knots 
+ (move [[1 0] [0 0]]
+       [0 -1]) sample-grid)
 ;; 
 
 (defn draw-knots
@@ -149,6 +152,7 @@
       ;; Test moves
       ;; all-moves (map motions [:R :R :R :U]) ; Problematic draw.
       ;;      all-moves (map motions [:D :D]) ; Problematic draw.
+      all-moves (map motions [:R :R :R :R :U])
 
       final-state (loop [state {:knots (repeat knot-count [0 0])
                                 :T-history #{[0 0]} }
@@ -163,10 +167,11 @@
       tail-visited-positions (count
                               (:T-history final-state))]
   ;; tail-visited-positions
+  (println (:knots final-state))
   (doall
    (draw-knots
     (:knots final-state)
-    [-5 5 -5 5]))
+    [0 5 -4 0]))
 
   (assoc final-state :tail-visited-positions 
          tail-visited-positions))
