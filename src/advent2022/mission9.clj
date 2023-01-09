@@ -84,9 +84,13 @@
         new-head (vadd head v)]
     (cons new-head (apply-with-prev tail-move-fn new-head (rest coll)))))
 
-(draw-knots 
- (move [[1 0] [0 0]]
-       [0 -1]) sample-grid)
+
+(println 
+ (draw-knots 
+  (move
+                                        ;[[1 0] [0 0]]
+   [[4 0] [3 0] [2 0]]
+   [0 -1]) sample-grid))
 ;; 
 
 (defn draw-knots
@@ -119,10 +123,11 @@
                      \.
                      (get points [x y])))]
      ;; (range min-x (inc max-x))
-     (map println  
-          (reverse (map #(apply str %) (partition (count xrange) toprint))))
+     (doall
+      (map println  
+           (reverse (map #(apply str %) (partition (count xrange) toprint)))))
 
-     )))
+     knots)))
 
 
 (def sample-knots [[4 2] [4 1] [4 0] [3 0] [2 0]
