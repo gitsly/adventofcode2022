@@ -85,8 +85,6 @@
 ;;(move [[2 0] [1 0] [0 0]] [1 0])
 
 ;; 
-(def sample-knots [[4 2] [4 1] [4 0] [3 0] [2 0]
-                   [1 0] [0 0] [0 0] [0 0] [0 0]])
 
 (defn draw-knots
   ([knots]
@@ -104,7 +102,9 @@
          ;;      span-y (- max-y min-y)
          points (zipmap (reverse knots)
                         (reverse
-                         (cons \H (map char (range (int \1) (+ (int \0) 10))))))
+
+                         (take (count knots)
+                               (cons \H (map char (range (int \1) (+ (int \0) 10)))))))
 
          xrange (range min-x (inc max-x))
          yrange (reverse (range min-y (inc max-y)))
@@ -117,15 +117,14 @@
                      (get points [x y])))]
      ;; (range min-x (inc max-x))
      (map println  
-          (map #(apply str %) (partition (count xrange) toprint)))
+          (reverse (map #(apply str %) (partition (count xrange) toprint))))
 
      )))
 
-(draw-knots sample-knots 
-            [0 
-             4
-             0 
-             4])
+
+(def sample-knots [[4 2] [4 1] [4 0] [3 0] [2 0]
+                   [1 0] [0 0] [0 0] [0 0] [0 0]])
+
 
 
 ;; Solution
@@ -137,9 +136,6 @@
 
       all-moves (map motions (flatten (map parse-line lines)))
 
-      ;; Test moves
-      ;;      all-moves (map motions [:R :R])
-
       knot-count 10
 
       move-all (fn [state
@@ -150,6 +146,9 @@
                        ;;(println "Tail: " (last (:knots state)))
                        (update state :T-history #(conj % (last (:knots state)))))
 
+      ;; Test moves
+      ;; all-moves (map motions [:R :R :R :U]) ; Problematic draw.
+      ;;      all-moves (map motions [:D :D]) ; Problematic draw.
 
       final-state (loop [state {:knots (repeat knot-count [0 0])
                                 :T-history #{[0 0]} }
@@ -164,9 +163,13 @@
       tail-visited-positions (count
                               (:T-history final-state))]
   ;; tail-visited-positions
-  (:knots final-state)
+  (doall
+   (draw-knots
+    (:knots final-state)
+    [-5 5 -5 5]))
 
-  )
+  (assoc final-state :tail-visited-positions 
+         tail-visited-positions))
 
 
 ;; PartII 7053 too high
