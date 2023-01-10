@@ -136,7 +136,7 @@
 
 
 ;; Solution
-(let [lines (utils/get-lines "resources/9_input.txt")
+(let [lines (utils/get-lines "resources/9_input_full.txt")
       parse-line (fn
                    [line]
                    (let [[_ cmd cnt] (re-matches #"(.*) (\d*)" line)]
@@ -155,16 +155,14 @@
                        (update state :T-history #(conj % (last (:knots state)))))
 
       ;; Test moves
-      ;; all-moves (map motions [:R :R :R :U]) ; Problematic draw.
-      ;;      all-moves (map motions [:D :D]) ; Problematic draw.
-      all-moves (map motions [:R :R :R :R
-                              :U :U :U :U
-                              :L :L :L
-                              :D
-                              :R :R :R :R
-                              :D
-                              :L :L :L :L :L
-                              :R :R])
+      ;;      all-moves (map motions [:R :R :R :R
+      ;;                              :U :U :U :U
+      ;;                              :L :L :L
+      ;;                              :D
+      ;;                              :R :R :R :R
+      ;;                              :D
+      ;;                              :L :L :L :L :L
+      ;;                              :R :R])
 
 
 
@@ -181,14 +179,16 @@
       tail-visited-positions (count
                               (:T-history final-state))]
   ;; tail-visited-positions
-  (println (:knots final-state))
   (doall
    (draw-knots
     (:knots final-state)
-    [0 5 -4 0]))
+    ;; [0 5 -4 0]
+    ))
 
   (assoc final-state :tail-visited-positions 
          tail-visited-positions))
 
 
-;; PartII 7053 too high
+;; PartII
+;; 7053 too high
+;; 53 -> just wrong. print also failed (splitted rope!?)
