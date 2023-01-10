@@ -61,7 +61,7 @@
               :L [-1 0]})
 
 (def sample-grid
-  [0 6 -4 0])
+  [0 5 -4 0])
 
 (defn tail-move-fn
   "How tail follows head"
@@ -69,7 +69,7 @@
   (let [move-map (zipmap (map :org mission9moves/move-info)
                          (map :vec mission9moves/move-info))
         v (get move-map (vsub T H))]
-    ;;    (println "org:" (vsub T H) "v:" v)
+    ;;(println "Head:" H "Tail" T "org:" (vsub T H) "v:" v)
     (if (nil? v)
       T
       (vadd T v))))
@@ -82,11 +82,14 @@
         new-head (vadd head v)]
     (cons new-head (apply-with-prev tail-move-fn new-head (rest coll)))))
 
+(draw-knots 
+ '([3 -2] [4 -3] [3 -3] [3 -2] [2 -2] [1 -1] [0 0] [0 0] [0 0] [0 0])
+ sample-grid)
 
 (draw-knots 
  (move
-  [[4 -1] [3 -2]]
-  [0 1])
+  [[3 -2] [4 -3]]
+  [-1 0])
  sample-grid)
 ;; 
 
@@ -156,7 +159,13 @@
       ;;      all-moves (map motions [:D :D]) ; Problematic draw.
       all-moves (map motions [:R :R :R :R
                               :U :U :U :U
-                              :L :L])
+                              :L :L :L
+                              :D
+                              :R :R :R :R
+                              :D
+                              :L :L :L :L :L
+                              :R :R])
+
 
 
       final-state (loop [state {:knots (repeat knot-count [0 0])

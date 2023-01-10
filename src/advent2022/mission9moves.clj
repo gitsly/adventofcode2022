@@ -35,7 +35,7 @@ H..
 .....
 ....."}
    {:org [2 -1] ; org is from H (centre 0 0) to T
-    :vec [-1 0] ; vector needed to move 'T' inorder to follow 'H'
+    :vec [-1 1] ; vector needed to move 'T' inorder to follow 'H'
     :comment "
 .....
 ....T
@@ -67,7 +67,7 @@ H..
 .....
 ....T"}
    {:org [1 2] ; org is from H (centre 0 0) to T
-    :vec [0 -1] ; vector needed to move 'T' inorder to follow 'H'
+    :vec [-1 -1] ; vector needed to move 'T' inorder to follow 'H'
     :comment "
 .....
 .....
