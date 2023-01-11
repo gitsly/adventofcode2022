@@ -26,7 +26,7 @@ H..
 ..H..
 .....
 ....."}
-   {:org [-2 -2] ; org is from H (centre 0 0) to T
+   {:org [2 -2] ; org is from H (centre 0 0) to T
     :vec [-1 1]
     :comment "
 ....T

@@ -242,7 +242,11 @@
 (draw-tail-visited
  (map :org mission9moves/move-info))
 
-(comment " Here's the bug!
+(count 
+ (distinct 
+  (map :org mission9moves/move-info))) ; Should be 16
+
+(comment " Here's the bug! [2, -2] is missing
 ####.
 #...#
 #...#

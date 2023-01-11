@@ -13,6 +13,13 @@
   (line-seq
    (clojure.java.io/reader file-path)))
 
+(defn dups
+  "Return duplicates in sequence"
+  [seq]
+  (for [[id freq] (frequencies seq)  ;; get the frequencies, destructure
+        :when (> freq 1)]            ;; this is the filter condition
+    id))                              ;; just need the id, not the frequency
+
 ;;(let [data-structure {:test 'something}]
 ;;  (binding [*print-dup* true] (prn data-structure)))
 
