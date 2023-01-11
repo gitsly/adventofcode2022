@@ -15,34 +15,65 @@
                    :op nil }
       instructions (let [parse-line (fn[line]
                                       (let [[_ op v] (re-matches #"(.*) (\d*)" line)]
-                                        (cond v {:addx (utils/as-integer v)})))]
+                                        (cond v {:addx (utils/as-integer v) :op-cycles 4 })))]
                      (map parse-line
                           (utils/get-lines "resources/input_10.txt")
-                          ))]
+                          ))
+      addx-fn (fn[cpu] (let [op (:op cpu)
+                             op-cycle-count (:op-cycles op)]
+                         (loop [op op]
+                           (if (= (:op-cycles op) 0)
+                             (-> cpu
+                                 (update :x #(+ % (:addx op))) ; effect of op 
+                                 (update :cycle #(+ % op-cycle-count)) ; Increase clock cycles of cpu
+                                 (dissoc :op)) ; Remove op (it's done)
+                             (recur (update op :op-cycles dec))))))
+
+      ]
   
   (loop [cpu       initial-cpu
          instr-seq instructions]
 
     (let [ins (first instr-seq)
-          cpu-fn (fn[cpu]
-                   (update cpu :cycle inc))] 
+          cpu-fn (fn[cpu
+                     ins]
+                   (cond (:addx ins) (addx-fn (assoc cpu :op ins)) ; set (assoc) :op in cpu and execute operation, give new cpustate
+                         :else                (update cpu :cycle inc))) ; noop
+          ] 
       (if (empty? instr-seq) 
         cpu
-        (recur (cpu-fn cpu) (rest instr-seq))))))
+        (recur (cpu-fn cpu ins) (rest instr-seq))))))
+
 
 (let [cpu {:x 1
            :cycle 0
            :op {:addx 23
                 :op-cycles 0}}
-      op1 (:op cpu)]
-  (loop [op op1]
-    (if (= 4 (:op-cycles op))
+
+      op-cycle-count 4
+      op (:op cpu)]
+  (loop [op op]
+    (if (= (:op-cycles op) op-cycle-count)
       (-> cpu
           (update :x #(+ % (:addx op))) ; effect of op 
-          (dissoc) :op) ; Remove op (it's done)
+          (update :cycle #(+ % op-cycle-count)) ; Increase clock cycles of cpu
+          (dissoc :op)) ; Remove op (it's done)
       (recur (update op :op-cycles inc)))))
 
 
+(let [cpu {:x 1
+           :cycle 0
+           :op {:addx 23
+                :op-cycles 4}}
+      op (:op cpu)
+      op-cycle-count (:op-cycles op)]
+  (loop [op op]
+    (if (= (:op-cycles op) 0)
+      (-> cpu
+          (update :x #(+ % (:addx op))) ; effect of op 
+          (update :cycle #(+ % op-cycle-count)) ; Increase clock cycles of cpu
+          (dissoc :op)) ; Remove op (it's done)
+      (recur (update op :op-cycles dec)))))
 
 ;; signal Strength = the cycle number multiplied by the value of the X register.
 
