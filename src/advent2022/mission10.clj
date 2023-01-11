@@ -14,17 +14,23 @@
    (fn1)])
 
 
-(let [initial-cpu {:x 1
-                   :cycle 0
-                   :op nil }
+(let [
 
-      instructions (let [parse-line (fn[line]
-                                      (let [[_ op v] (re-matches #"(.*) (\d*)" line)]
-                                        (cond v { :addx (utils/as-integer v) :op-cycles 4 })))]
-                     ;; Note: noop becomes 'nil' in cond above. 
-                     (map parse-line
-                          (utils/get-lines "resources/input_10.txt")
-                          ))
+      ops(let [parse-line (fn[line]
+                            (let [[_ op v] (re-matches #"(.*) (\d*)" line)]
+                              (cond v { :addx (utils/as-integer v) :op-cycles 4 })))]
+           ;; Note: noop becomes 'nil' in cond above. 
+           (map parse-line
+                (utils/get-lines "resources/input_10.txt")))
+
+      ops [nil
+           nil
+           {:addx 23 :op-cycles 4 }]
+
+      initial-cpu {:x 1
+                   :cycle 0
+                   :ops ops }
+
       addx-fn (fn[cpu] (let [op (:op cpu)
                              op-cycle-count (:op-cycles op)]
                          (loop [op op]
@@ -36,26 +42,25 @@
                              (recur (update op :op-cycles dec))))))
 
       do-cycle (fn do-cycle
-                 [cpu
-                  instr-seq]
-                 (let [ins (first instr-seq)
-                       cpu-fn (fn[cpu
-                                  ins]
-                                (println "Doing" ins "CPU:" cpu)
-                                (cond (:addx ins) (addx-fn (assoc cpu :op ins))
-                                      :else                (update cpu :cycle inc))) ; noop
+                 [cpu]
+                 (let [cpu-fn (fn[cpu]
+                                (let [ops (:ops cpu)
+                                      op (first ops)]
+                                  (println "Doing" op "CPU:" cpu)
+                                  (-> cpu
+                                      (update :cycle inc)
+                                      (update :ops #(rest %)))))
                        ] 
-                   (if (empty? instr-seq) 
-                     cpu
+                   (if (empty? (:ops cpu)) 
+                     []
                      (lazy-seq
                       (cons cpu
-                            (do-cycle (cpu-fn cpu ins)
-                                      (rest instr-seq)))))))
+                            (do-cycle (cpu-fn cpu)))))))
 
       ]
   
-  (take 4 
-        (do-cycle initial-cpu instructions)))
+                                        ;(take 4) 
+  (map #(dissoc % :ops) (do-cycle initial-cpu)))
 
 
 (let [cpu {:x 1
