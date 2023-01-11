@@ -47,9 +47,19 @@
                                 (let [ops (:ops cpu)
                                       op (first ops)]
                                   (println "Doing" op "CPU:" cpu)
-                                  (-> cpu
-                                      (update :cycle inc)
-                                      (update :ops #(rest %)))))
+                                  (cond (:assoc op) (-> cpu
+                                                        (update :cycle inc)
+                                                        (update :ops
+                                                                #(let [op (first %)]
+                                                                   (if (= (:op-cycles op) 0)
+                                                                     (rest %)))))
+
+
+                                        :else (-> cpu ; noop
+                                                  (update :cycle inc)
+                                                  (update :ops #(rest %)))
+
+                                        )))
                        ] 
                    (if (empty? (:ops cpu)) 
                      []
@@ -61,6 +71,7 @@
   
                                         ;(take 4) 
   (map #(dissoc % :ops) (do-cycle initial-cpu)))
+
 
 
 (let [cpu {:x 1
