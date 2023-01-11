@@ -93,41 +93,75 @@
  sample-grid)
 ;; 
 
+
+(defn draw-tail-visited
+  ([knots]
+   (draw-tail-visited knots [(apply min (map first knots))
+                             (apply max (map first knots))
+                             (apply min (map second knots))
+                             (apply max (map second knots))]))
+  ([knots boundaries]
+   (let [[min-x  
+          max-x  
+          min-y  
+          max-y] boundaries
+
+         ;;      span-x (- max-x min-x)
+         ;;      span-y (- max-y min-y)
+         points (zipmap (reverse knots)
+                        (repeat \#))
+
+         xrange (range min-x (inc max-x))
+         yrange (reverse (range min-y (inc max-y)))
+
+         toprint (for [y yrange
+                       x xrange]
+                   ;;{[x y]}
+                   (if (nil? (get points [x y]))
+                     \.
+                     (get points [x y])))]
+     ;; (range min-x (inc max-x))
+     (doall
+      (map println  
+           (reverse (map #(apply str %) (partition (count xrange) toprint)))))
+
+     knots)))
+
 (defn draw-knots
-([knots]
- (draw-knots knots [(apply min (map first knots))
-                    (apply max (map first knots))
-                    (apply min (map second knots))
-                    (apply max (map second knots))]))
-([knots boundaries]
- (let [[min-x  
-        max-x  
-        min-y  
-        max-y] boundaries
+  ([knots]
+   (draw-knots knots [(apply min (map first knots))
+                      (apply max (map first knots))
+                      (apply min (map second knots))
+                      (apply max (map second knots))]))
+  ([knots boundaries]
+   (let [[min-x  
+          max-x  
+          min-y  
+          max-y] boundaries
 
-       ;;      span-x (- max-x min-x)
-       ;;      span-y (- max-y min-y)
-       points (zipmap (reverse knots)
-                      (reverse
+         ;;      span-x (- max-x min-x)
+         ;;      span-y (- max-y min-y)
+         points (zipmap (reverse knots)
+                        (reverse
 
-                       (take (count knots)
-                             (cons \H (map char (range (int \1) (+ (int \0) 10)))))))
+                         (take (count knots)
+                               (cons \H (map char (range (int \1) (+ (int \0) 10)))))))
 
-       xrange (range min-x (inc max-x))
-       yrange (reverse (range min-y (inc max-y)))
+         xrange (range min-x (inc max-x))
+         yrange (reverse (range min-y (inc max-y)))
 
-       toprint (for [y yrange
-                     x xrange]
-                 ;;{[x y]}
-                 (if (nil? (get points [x y]))
-                   \.
-                   (get points [x y])))]
-   ;; (range min-x (inc max-x))
-   (doall
-    (map println  
-         (reverse (map #(apply str %) (partition (count xrange) toprint)))))
+         toprint (for [y yrange
+                       x xrange]
+                   ;;{[x y]}
+                   (if (nil? (get points [x y]))
+                     \.
+                     (get points [x y])))]
+     ;; (range min-x (inc max-x))
+     (doall
+      (map println  
+           (reverse (map #(apply str %) (partition (count xrange) toprint)))))
 
-   knots)))
+     knots)))
 
 
 (def sample-knots [[4 2] [4 1] [4 0] [3 0] [2 0]
@@ -179,9 +213,16 @@
       tail-visited-positions (count
                               (:T-history final-state))]
   ;; tail-visited-positions
+  (comment
+    (doall
+     (draw-knots
+      (:knots final-state)
+      ;; [0 5 -4 0]
+      )))
+
   (doall
-   (draw-knots
-    (:knots final-state)
+   (draw-tail-visited
+    (:T-history final-state)
     ;; [0 5 -4 0]
     ))
 
@@ -192,3 +233,18 @@
 ;; PartII
 ;; 7053 too high
 ;; 53 -> just wrong. print also failed (splitted rope!?)
+
+;; Sanity checks
+;; 1. No mapping with too short length
+(apply min
+       (map vlen (map :org mission9moves/move-info)))
+
+(draw-tail-visited
+ (map :org mission9moves/move-info))
+
+(comment " Here's the bug!
+####.
+#...#
+#...#
+#...#
+#####")
