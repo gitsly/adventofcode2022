@@ -213,42 +213,20 @@
       tail-visited-positions (count
                               (:T-history final-state))]
   ;; tail-visited-positions
-  (comment
-    (doall
-     (draw-knots
-      (:knots final-state)
-      ;; [0 5 -4 0]
-      )))
-
   (doall
-   (draw-tail-visited
-    (:T-history final-state)
+   (draw-knots
+    (:knots final-state)
     ;; [0 5 -4 0]
     ))
+
+  ;;  (doall
+  ;;   (draw-tail-visited
+  ;;    (:T-history final-state)
+  ;;    ;; [0 5 -4 0]
+  ;;    ))
 
   (assoc final-state :tail-visited-positions 
          tail-visited-positions))
 
 
-;; PartII
-;; 7053 too high
-;; 53 -> just wrong. print also failed (splitted rope!?)
-
-;; Sanity checks
-;; 1. No mapping with too short length
-(apply min
-       (map vlen (map :org mission9moves/move-info)))
-
-(draw-tail-visited
- (map :org mission9moves/move-info))
-
-(count 
- (distinct 
-  (map :org mission9moves/move-info))) ; Should be 16
-
-(comment " Here's the bug! [2, -2] is missing
-####.
-#...#
-#...#
-#...#
-#####")
+;; PartII = 2630
