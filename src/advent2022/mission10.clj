@@ -7,20 +7,40 @@
   (:gen-class))
 
 
-(let [parse-line (fn[line]
-                   (let [[_ op v] (re-matches #"(.*) (\d*)" line)]
-                     (cond v {:addx (utils/as-integer v)})))]
-  (map parse-line
-       (utils/get-lines "resources/input_10.txt")
-       ))
+;; Note: noop becomes 'nil' 
 
 
 (let [initial-cpu {:x 1
-                   :op-cnt 0}
-      ]
+                   :cycle 0
+                   :op nil }
+      instructions (let [parse-line (fn[line]
+                                      (let [[_ op v] (re-matches #"(.*) (\d*)" line)]
+                                        (cond v {:addx (utils/as-integer v)})))]
+                     (map parse-line
+                          (utils/get-lines "resources/input_10.txt")
+                          ))]
   
-  (loop [cpu initial-cpu
-         instr ]))
+  (loop [cpu       initial-cpu
+         instr-seq instructions]
+
+    (let [ins (first instr-seq)
+          cpu-fn (fn[cpu]
+                   (update cpu :cycle inc))] 
+      (if (empty? instr-seq) 
+        cpu
+        (recur (cpu-fn cpu) (rest instr-seq))))))
+
+(let [cpu {:x 1
+           :cycle 0
+           :op {:addx 23
+                :op-cycles 0}}
+      op1 (:op cpu)]
+  (loop [op op1]
+    (if (= 4 (:op-cycles op))
+      (-> cpu
+          (update :x #(+ % (:addx op))) ; effect of op 
+          (dissoc) :op) ; Remove op (it's done)
+      (recur (update op :op-cycles inc)))))
 
 
 
