@@ -46,9 +46,11 @@
                                       :else                (update cpu :cycle inc))) ; noop
                        ] 
                    (if (empty? instr-seq) 
-                     (:x cpu)
+                     cpu
                      (lazy-seq
-                      (do-cycle (cpu-fn cpu ins) (rest instr-seq))))))
+                      (cons cpu
+                            (do-cycle (cpu-fn cpu ins)
+                                      (rest instr-seq)))))))
 
       ]
   
