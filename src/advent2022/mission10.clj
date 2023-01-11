@@ -7,15 +7,21 @@
   (:gen-class))
 
 
-;; Note: noop becomes 'nil' 
+(let [fn1 (fn fn1
+            ([a] a)
+            ([] nil))]
+  [(fn1 2)
+   (fn1)])
 
 
 (let [initial-cpu {:x 1
                    :cycle 0
                    :op nil }
+
       instructions (let [parse-line (fn[line]
                                       (let [[_ op v] (re-matches #"(.*) (\d*)" line)]
-                                        (cond v {:addx (utils/as-integer v) :op-cycles 4 })))]
+                                        (cond v { :addx (utils/as-integer v) :op-cycles 4 })))]
+                     ;; Note: noop becomes 'nil' in cond above. 
                      (map parse-line
                           (utils/get-lines "resources/input_10.txt")
                           ))
@@ -29,20 +35,25 @@
                                  (dissoc :op)) ; Remove op (it's done)
                              (recur (update op :op-cycles dec))))))
 
+      do-cycle (fn do-cycle
+                 [cpu
+                  instr-seq]
+                 (let [ins (first instr-seq)
+                       cpu-fn (fn[cpu
+                                  ins]
+                                (println "Doing" ins "CPU:" cpu)
+                                (cond (:addx ins) (addx-fn (assoc cpu :op ins))
+                                      :else                (update cpu :cycle inc))) ; noop
+                       ] 
+                   (if (empty? instr-seq) 
+                     (:x cpu)
+                     (lazy-seq
+                      (do-cycle (cpu-fn cpu ins) (rest instr-seq))))))
+
       ]
   
-  (loop [cpu       initial-cpu
-         instr-seq instructions]
-
-    (let [ins (first instr-seq)
-          cpu-fn (fn[cpu
-                     ins]
-                   (cond (:addx ins) (addx-fn (assoc cpu :op ins)) ; set (assoc) :op in cpu and execute operation, give new cpustate
-                         :else                (update cpu :cycle inc))) ; noop
-          ] 
-      (if (empty? instr-seq) 
-        cpu
-        (recur (cpu-fn cpu ins) (rest instr-seq))))))
+  (take 4 
+        (do-cycle initial-cpu instructions)))
 
 
 (let [cpu {:x 1
@@ -78,6 +89,12 @@
 ;; signal Strength = the cycle number multiplied by the value of the X register.
 
 ;; Check signal-strength every 20nth cycle:  20th, 60th, 100th, 140th, 180th, and 220
+
+
+(take 3
+      (loop [x (range)]
+        ()
+        ()))
 
 
 (comment "
