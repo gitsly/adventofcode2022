@@ -18,8 +18,8 @@
 
       ops(let [parse-line (fn[line]
                             (let [[_ op v] (re-matches #"(.*) (\d*)" line)]
-                              (cond v { :addx (utils/as-integer v) :op-cycles 4 })))]
-           ;; Note: noop becomes 'nil' in cond above. 
+                              (cond v { :addx (utils/as-integer v) :op-cycles 4 }
+                                    :else {:noop true })))]
            (map parse-line
                 (utils/get-lines "resources/input_10.txt")))
 
@@ -46,20 +46,30 @@
                  (let [cpu-fn (fn[cpu]
                                 (let [ops (:ops cpu)
                                       op (first ops)]
-                                  (println "Doing" op "CPU:" cpu)
-                                  (cond (:assoc op) (-> cpu
-                                                        (update :cycle inc)
-                                                        (update :ops
-                                                                #(let [op (first %)]
-                                                                   (if (= (:op-cycles op) 0)
-                                                                     (rest %)))))
 
+                                  (update 
+                                   (cond
+                                     (nil? op) (do
+                                                 (println "noop" op "CPU:" cpu)
+                                                 (-> cpu
+                                                     (update :ops rest)))
+                                     
+                                     (:addx op) (-> cpu
+                                                    (update :ops ; TODO separate into own fn?
+                                                            #(let [[op & other-ops] %
+                                                                   cycles (:op-cycles op)]
+                                                               (println "addx" (cons (update op :op-cycles dec) other-ops))
+                                                               (if (> cycles 1)
+                                                                 (cons
+                                                                  (update op :op-cycles dec)
+                                                                  other-ops)
+                                                                 other-ops))))
+                                     
 
-                                        :else (-> cpu ; noop
-                                                  (update :cycle inc)
-                                                  (update :ops #(rest %)))
+                                     :else (-> cpu ; noop
+                                               (update :ops rest))
 
-                                        )))
+                                     ) :cycle inc)))
                        ] 
                    (if (empty? (:ops cpu)) 
                      []
@@ -72,7 +82,8 @@
                                         ;(take 4) 
   (map #(dissoc % :ops) (do-cycle initial-cpu)))
 
-
+(let [[first & other] [1 2 3 4]]
+  (cons first other))
 
 (let [cpu {:x 1
            :cycle 0
@@ -113,6 +124,7 @@
       (loop [x (range)]
         ()
         ()))
+
 
 
 (comment "
