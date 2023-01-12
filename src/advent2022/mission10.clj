@@ -19,13 +19,14 @@
       ops(let [parse-line (fn[line]
                             (let [[_ op v] (re-matches #"(.*) (\d*)" line)]
                               (cond v { :addx (utils/as-integer v) :op-cycles 4 }
-                                    :else {:noop true })))]
-           (map parse-line
-                (utils/get-lines "resources/input_10.txt")))
+                                    :else nil)))]
+           (vec (map parse-line
+                     (utils/get-lines "resources/input_10.txt"))))
 
-      ops [nil
-           nil
-           {:addx 23 :op-cycles 4 }]
+      ;;testing
+      ;;      ops [nil
+      ;;           nil
+      ;;           {:addx 23 :op-cycles 4 }]
 
       initial-cpu {:x 1
                    :cycle 0
@@ -66,8 +67,20 @@
                    (println "do-cycle" cpu)
                    (lazy-seq (cons cpu (do-cycle (cpu-fn cpu))))))
 
+      signal-strength (fn[cpu] (* (:x cpu) (:cycle cpu)))
+
       ]
   
-  (map #(dissoc % :ops) 
-       ;; (take-while #(not (empty? (:ops %))) (do-cycle initial-cpu))
-       (take 7 (do-cycle initial-cpu))))
+  ;; (map signal-strength) 
+  ;; (take-while #(not (empty? (:ops %))) (do-cycle initial-cpu))
+
+  ;;  (map #(dissoc % :ops) (take 8 (do-cycle initial-cpu)))
+
+  (map
+   ;; #({:signal-strength (signal-strength %) })
+   #(:cycle %)
+
+   (take-nth 40
+             (drop 20 (take (+ 40 220) (do-cycle initial-cpu)))))
+  ;;  (:ops initial-cpu)
+  )
