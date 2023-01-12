@@ -33,7 +33,7 @@
                    :ops ops }
 
       noop-fn (fn [cpu]
-                (println "noop")
+                ;;                (println "noop")
                 (-> cpu
                     (update :ops #(vec (rest %)))))
 
@@ -41,7 +41,7 @@
                 [cpu]
                 (let [op (first (:ops cpu))
                       v (:addx op)]
-                  (println "addx")
+                  ;;                  (println "addx")
                   (if (= (dec (:op-cycles op)) 0)
                     ;; operation takes effect
                     (do
@@ -64,10 +64,11 @@
                                                   (update :ops #(vec (rest %)))))
                                       (update :cycle inc))))] 
 
-                   (println "do-cycle" cpu)
+                   ;;(println "do-cycle" cpu)
                    (lazy-seq (cons cpu (do-cycle (cpu-fn cpu))))))
 
-      signal-strength (fn[cpu] (* (:x cpu) (:cycle cpu)))
+      signal-strength (fn[cpu] (* (:x cpu)
+                                  (:cycle cpu)))
 
       ]
   
@@ -77,8 +78,9 @@
   ;;  (map #(dissoc % :ops) (take 8 (do-cycle initial-cpu)))
 
   (map
-   ;; #({:signal-strength (signal-strength %) })
-   #(:cycle %)
+   (fn[cpu]
+     {:cycle (:cycle cpu)
+      :signal-strength (signal-strength cpu)})
 
    (take-nth 40
              (drop 20 (take (+ 40 220) (do-cycle initial-cpu)))))
