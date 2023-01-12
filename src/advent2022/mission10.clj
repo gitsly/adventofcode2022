@@ -21,7 +21,7 @@
                                (cond v { :addx (utils/as-integer v) :op-cycles 2 }
                                      :else nil)))]
             (vec (map parse-line
-                      (utils/get-lines "resources/input_10.txt"))))
+                      (utils/get-lines "resources/input_10_full.txt"))))
 
       ;;testing
       ;;      ops [nil
@@ -81,6 +81,7 @@
                       (select-keys [:cycle :x])
                       (assoc :ss (signal-strength cpu))))
 
+      ;; 12470 (too low)
       part1-solution (apply + 
                             (map :ss
                                  (map prep-data
@@ -89,4 +90,8 @@
                                                       (drop (dec 20) (do-cycle initial-cpu)))))))
       ]
 
-  part1-solution)
+  (map :ss
+       (map prep-data
+            (take 6
+                  (take-nth 40
+                            (drop (dec 20) (do-cycle initial-cpu)))))))
