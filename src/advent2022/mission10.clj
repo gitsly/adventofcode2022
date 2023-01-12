@@ -31,79 +31,77 @@
                    :cycle 0
                    :ops ops }
 
-      addx-fn (fn[cpu] (let [op (:op cpu)
-                             op-cycle-count (:op-cycles op)]
-                         (loop [op op]
-                           (if (= (:op-cycles op) 0)
-                             (-> cpu
-                                 (update :x #(+ % (:addx op))) ; effect of op 
-                                 (update :cycle #(+ % op-cycle-count)) ; Increase clock cycles of cpu
-                                 (dissoc :op)) ; Remove op (it's done)
-                             (recur (update op :op-cycles dec))))))
+      noop-fn (fn [cpu]
+                (println "noop")
+                (-> cpu
+                    (update :ops #(vec (rest %)))))
 
-      addx-fn (fn[] (update :ops
-                            #(let [[op & other-ops] %
-                                   cycles (:op-cycles op)]
-                               (println "addx" (cons (update op :op-cycles dec) other-ops))
-                               (if (> cycles 1)
-                                 (cons
-                                  (update op :op-cycles dec)
-                                  other-ops)
-                                 other-ops))))
+      addx-fn (fn
+                [cpu]
+                (let [op (first (:ops cpu))
+                      v (:addx op)]
+                  (println "addx")
+                  (if (= (dec (:op-cycles op)) 0)
+                    ;; operation takes effect
+                    (do
+                      (-> cpu
+                          (update :ops #(vec (rest %)))
+                          (update :x #(+ (:addx op) %))))
+                    ;;
+                    (-> cpu
+                        (update-in [:ops 0 :op-cycles] dec)))))
 
       do-cycle (fn do-cycle
                  [cpu]
                  (let [cpu-fn (fn[cpu]
                                 (let [ops (:ops cpu)
                                       op (first ops)]
+                                  (-> (cond
+                                        (nil? op) (noop-fn cpu)
+                                        (:addx op) (addx-fn cpu)
+                                        :else (-> cpu ; noop
+                                                  (update :ops #(vec (rest %)))))
+                                      (update :cycle inc))))] 
 
-                                  (update 
-                                   (cond
-                                     (nil? op) (do
-                                                 (println "noop" op "CPU:" cpu)
-                                                 (-> cpu
-                                                     (update :ops rest)))
-                                     
-                                     (:addx op) (addx-fn cpu)
-                                     
-
-                                     :else (-> cpu ; noop
-                                               (update :ops rest))
-
-                                     ) :cycle inc)))
-                       ] 
+                   (println "do-cycle" cpu)
                    (if (empty? (:ops cpu)) 
-                     []
+                     (cpu-fn cpu)
                      (lazy-seq
                       (cons cpu
                             (do-cycle (cpu-fn cpu)))))))
 
       ]
   
-                                        ;(take 4) 
-  (map #(dissoc % :ops) (do-cycle initial-cpu)))
+  (map #(dissoc % :ops) (do-cycle initial-cpu))
 
+  ;;(addx-fn {:x 1, :cycle 1, :ops [{:addx 23, :op-cycles 1}]})
 
-(update op :op-cycles dec)
+  )
 
-(let [cpu {:x 1, :cycle 1, :ops [{:addx 2, :op-cycles 2}]}
-      op (first (:ops cpu))]
+(defn positive-numbers 
+  ([] (positive-numbers 1))
+  ([n] (lazy-seq (cons n (positive-numbers (inc n))))))
 
-  (if (= (dec (:op-cycles op)) 0)
-    ;; operation takes effect
-    (-> cpu
-        (update :ops rest)
-        (update :x #(+ (:addx op) %)))
-    ;;
-    (-> cpu
-        (update-in [:ops 0 :op-cycles] dec))))
+(take 3 (positive-numbers))
 
-;; assoc and update works in vectors too!
-(assoc [1 2 3 4] 0 :a)
-(update [1 2 3 4] 0 inc)
+(defn fib
+  ([] (fib 1 1))
+  ([a b] (lazy-seq
+          (cons a (fib (+ a b) a)))))
 
-(update-in 
- {:x 1, :cycle 1, :ops [{:addx 2, :op-cycles 2}]}
- [:ops 0 :op-cycles] inc)
+(take 10 (fib))
 
+(defn do-cycle
+  [cpu]
+  (println "loop" cpu)
+  (if (nil? (:cycle cpu))
+    (do-cycle (assoc cpu :cycle 1))
+    (lazy-seq
+     (cons cpu (do-cycle
+                (update cpu :cycle inc)
+
+                )))))
+
+(take 3
+      (do-cycle {}))
 
