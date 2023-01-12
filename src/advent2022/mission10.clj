@@ -94,14 +94,17 @@
 (defn do-cycle
   [cpu]
   (println "loop" cpu)
-  (if (nil? (:cycle cpu))
-    (do-cycle (assoc cpu :cycle 1))
-    (lazy-seq
-     (cons cpu (do-cycle
-                (update cpu :cycle inc)
+  (let [cycle-fn (fn[cpu]
+                   (update cpu :cycle inc))]
 
-                )))))
+    (if (nil? (:cycle cpu))
+      (do-cycle (assoc cpu :cycle 1))
+      (lazy-seq
+       (cons cpu (do-cycle (cycle-fn cpu)))))))
 
-(take 3
-      (do-cycle {}))
+(= 32 (:cycle cpu)) (do-cycle (assoc cpu :done true))
+
+(take 3 (do-cycle {:note "state1"}))
+
+(take-while #(not (:done %)) (do-cycle {:note "some state"}))
 
