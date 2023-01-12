@@ -1,0 +1,149 @@
+addx 15,  {:addx 15, :op-cycles 2}}
+addx -11, {:addx -11, :op-cycles 2}}
+addx 6,   {:addx 6, :op-cycles 2}}
+addx -3,  {:addx -3, :op-cycles 2}}
+addx 5,   {:addx 5, :op-cycles 2}}
+addx -1,  {:addx -1, :op-cycles 2}}
+addx -8,  {:addx -8, :op-cycles 2}}
+addx 13,  {:addx 13, :op-cycles 2}}
+addx 4,   {:addx 4, :op-cycles 2}}
+noop,     nil}
+addx -1,  {:addx -1, :op-cycles 2}}
+addx 5,   {:addx 5, :op-cycles 2}}
+addx -1,  {:addx -1, :op-cycles 2}}
+addx 5,   {:addx 5, :op-cycles 2}}
+addx -1,  {:addx -1, :op-cycles 2}}
+addx 5,   {:addx 5, :op-cycles 2}}
+addx -1,  {:addx -1, :op-cycles 2}}
+addx 5,   {:addx 5, :op-cycles 2}}
+addx -1,  {:addx -1, :op-cycles 2}}
+addx -35, {:addx -35, :op-cycles 2}}
+addx 1,   {:addx 1, :op-cycles 2}}
+addx 24,  {:addx 24, :op-cycles 2}}
+addx -19, {:addx -19, :op-cycles 2}}
+addx 1,   {:addx 1, :op-cycles 2}}
+addx 16,  {:addx 16, :op-cycles 2}}
+addx -11, {:addx -11, :op-cycles 2}}
+noop,     nil}
+noop,     nil}
+addx 21,  {:addx 21, :op-cycles 2}}
+addx -15, {:addx -15, :op-cycles 2}}
+noop,     nil}
+noop,     nil}
+addx -3,  {:addx -3, :op-cycles 2}}
+addx 9,   {:addx 9, :op-cycles 2}}
+addx 1,   {:addx 1, :op-cycles 2}}
+addx -3,  {:addx -3, :op-cycles 2}}
+addx 8,   {:addx 8, :op-cycles 2}}
+addx 1,   {:addx 1, :op-cycles 2}}
+addx 5,   {:addx 5, :op-cycles 2}}
+noop,     nil}
+noop,     nil}
+noop,     nil}
+noop,     nil}
+noop,     nil}
+addx -36, {:addx -36, :op-cycles 2}}
+noop,     nil}
+addx 1,   {:addx 1, :op-cycles 2}}
+addx 7,   {:addx 7, :op-cycles 2}}
+noop,     nil}
+noop,     nil}
+noop,     nil}
+addx 2,   {:addx 2, :op-cycles 2}}
+addx 6,   {:addx 6, :op-cycles 2}}
+noop,     nil}
+noop,     nil}
+noop,     nil}
+noop,     nil}
+noop,     nil}
+addx 1,   {:addx 1, :op-cycles 2}}
+noop,     nil}
+noop,     nil}
+addx 7,   {:addx 7, :op-cycles 2}}
+addx 1,   {:addx 1, :op-cycles 2}}
+noop,     nil}
+addx -13, {:addx -13, :op-cycles 2}}
+addx 13,  {:addx 13, :op-cycles 2}}
+addx 7,   {:addx 7, :op-cycles 2}}
+noop,     nil}
+addx 1,   {:addx 1, :op-cycles 2}}
+addx -33, {:addx -33, :op-cycles 2}}
+noop,     nil}
+noop,     nil}
+noop,     nil}
+addx 2,   {:addx 2, :op-cycles 2}}
+noop,     nil}
+noop,     nil}
+noop,     nil}
+addx 8,   {:addx 8, :op-cycles 2}}
+noop,     nil}
+addx -1,  {:addx -1, :op-cycles 2}}
+addx 2,   {:addx 2, :op-cycles 2}}
+addx 1,   {:addx 1, :op-cycles 2}}
+noop,     nil}
+addx 17,  {:addx 17, :op-cycles 2}}
+addx -9,  {:addx -9, :op-cycles 2}}
+addx 1,   {:addx 1, :op-cycles 2}}
+addx 1,   {:addx 1, :op-cycles 2}}
+addx -3,  {:addx -3, :op-cycles 2}}
+addx 11,  {:addx 11, :op-cycles 2}}
+noop,     nil}
+noop,     nil}
+addx 1,   {:addx 1, :op-cycles 2}}
+noop,     nil}
+addx 1,   {:addx 1, :op-cycles 2}}
+noop,     nil}
+noop,     nil}
+addx -13, {:addx -13, :op-cycles 2}}
+addx -19, {:addx -19, :op-cycles 2}}
+addx 1,   {:addx 1, :op-cycles 2}}
+addx 3,   {:addx 3, :op-cycles 2}}
+addx 26,  {:addx 26, :op-cycles 2}}
+addx -30, {:addx -30, :op-cycles 2}}
+addx 12,  {:addx 12, :op-cycles 2}}
+addx -1,  {:addx -1, :op-cycles 2}}
+addx 3,   {:addx 3, :op-cycles 2}}
+addx 1,   {:addx 1, :op-cycles 2}}
+noop,     nil}
+noop,     nil}
+noop,     nil}
+addx -9,  {:addx -9, :op-cycles 2}}
+addx 18,  {:addx 18, :op-cycles 2}}
+addx 1,   {:addx 1, :op-cycles 2}}
+addx 2,   {:addx 2, :op-cycles 2}}
+noop,     nil}
+noop,     nil}
+addx 9,   {:addx 9, :op-cycles 2}}
+noop,     nil}
+noop,     nil}
+noop,     nil}
+addx -1,  {:addx -1, :op-cycles 2}}
+addx 2,   {:addx 2, :op-cycles 2}}
+addx -37, {:addx -37, :op-cycles 2}}
+addx 1,   {:addx 1, :op-cycles 2}}
+addx 3,   {:addx 3, :op-cycles 2}}
+noop,     nil}
+addx 15,  {:addx 15, :op-cycles 2}}
+addx -21, {:addx -21, :op-cycles 2}}
+addx 22,  {:addx 22, :op-cycles 2}}
+addx -6,  {:addx -6, :op-cycles 2}}
+addx 1,   {:addx 1, :op-cycles 2}}
+
+noop,     nil}
+addx 2,   {:addx 2, :op-cycles 2}}
+addx 1,   {:addx 1, :op-cycles 2}}
+noop,     nil}  (220th cycle)
+
+addx -10, {:addx -10, :op-cycles 2}}
+noop,     nil}
+noop,     nil}
+addx 20,  {:addx 20, :op-cycles 2}}
+addx 1,   {:addx 1, :op-cycles 2}}
+addx 2,   {:addx 2, :op-cycles 2}}
+addx 2,   {:addx 2, :op-cycles 2}}
+addx -6,  {:addx -6, :op-cycles 2}}
+addx -11, {:addx -11, :op-cycles 2}}
+noop,     nil}
+noop,     nil}
+noop,     nil}
+
