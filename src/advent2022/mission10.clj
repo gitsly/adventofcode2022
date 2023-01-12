@@ -14,14 +14,12 @@
    (fn1)])
 
 
-(let [
-
-      ops (let [parse-line (fn[line]
+(let [ops (let [parse-line (fn[line]
                              (let [[_ op v] (re-matches #"(.*) (-?\d*)" line)]
                                (cond v { :addx (utils/as-integer v) :op-cycles 2 }
                                      :else nil)))]
             (vec (map parse-line
-                      (utils/get-lines "resources/input_10_full.txt"))))
+                      (utils/get-lines "resources/input_10.txt"))))
 
       ;;testing
       ;;      ops [nil
@@ -90,8 +88,12 @@
                                                       (drop (dec 20) (do-cycle initial-cpu)))))))
       ]
 
-  (map :ss
-       (map prep-data
-            (take 6
-                  (take-nth 40
-                            (drop (dec 20) (do-cycle initial-cpu)))))))
+  (apply + 
+         (map :ss
+              (map prep-data
+                   (take 6
+                         (take-nth 40
+                                   (drop (dec 20) (do-cycle initial-cpu)))))))
+
+
+  )
