@@ -84,9 +84,8 @@
       crt {:width 40
            :height 6}; You count the pixels on the CRT: 40 wide and 6 high
 
-      pixel-fn (fn[cpu
-                   x y]
-                 (let [x 2
+      pixel-fn (fn[cpu]
+                 (let [x 1 
                        scan-x 4
                        sprite (set (map #(+ scan-x %) [-1 0 1]))] 
                    (if (not (nil? (sprite x)))
@@ -112,8 +111,20 @@
 
   (draw-lcd-fn crt draw-data1)
   
+  (let [scanline (fn scanline
+                   [scan-x x]
+                   (let [sprite (set (map #(+ scan-x %) [-1 0 1]))
+                         pxl (if (not (nil? (sprite x)))
+                               \#
+                               \.)]
+                     (lazy-seq (cons pxl (scanline (inc scan-x) x)))))
+        ]
+    
+    (take 10 (scanline 0 3)))
+  
 
   
   )
+
 
 
