@@ -86,7 +86,12 @@
 
       pixel-fn (fn[cpu
                    x y]
-                 nil)
+                 (let [x 2
+                       scan-x 4
+                       sprite (set (map #(+ scan-x %) [-1 0 1]))] 
+                   (if (not (nil? (sprite x)))
+                     \#
+                     \.)))
 
       draw-data1 (for [y (range (:height crt))
                        x (range (:width crt))]
@@ -97,9 +102,18 @@
                                         (reverse (map #(apply str %) (partition (:width crt) data))))))
       ]
 
+  (first
+   (take 10
+         (drop 20
+               (map :x
+                    (map #(select-keys % [:x] )
+                         (do-cycle initial-cpu))))))
+
+
   (draw-lcd-fn crt draw-data1)
   
 
+  
   )
 
 
