@@ -84,13 +84,6 @@
       crt {:width 40
            :height 6}; You count the pixels on the CRT: 40 wide and 6 high
 
-      pixel-fn (fn[cpu]
-                 (let [x 1 
-                       scan-x 4
-                       sprite (set (map #(+ scan-x %) [-1 0 1]))] 
-                   (if (not (nil? (sprite x)))
-                     \#
-                     \.)))
 
       draw-data1 (for [y (range (:height crt))
                        x (range (:width crt))]
@@ -98,34 +91,46 @@
 
       draw-lcd-fn (fn[crt
                       data] (doall (map println  
-                                        (reverse (map #(apply str %) (partition (:width crt) data))))))
+                                        (map #(apply str %) (partition (:width crt) data)))))
+
+      scanline (fn scanline
+                 ([x] (scanline 0 x))
+                 ([scan-x x]
+                  (let [sprite (set (map #(+ scan-x %) [-1 0 1]))
+                        pxl (if (not (nil? (sprite x))) \# \.)]
+                    (lazy-seq (cons pxl (scanline (inc scan-x) x))))))
+
+      pixel-fn (fn[inp]
+                 (let [[scanline x] inp
+                       sprite (set (map #(+ scanline %) [-1 0 1]))] 
+                   (if (not (nil? (sprite x)))
+                     \#
+                     \.)))
+
       ]
 
-  (first
-   (take 10
-         (drop 20
-               (map :x
-                    (map #(select-keys % [:x] )
-                         (do-cycle initial-cpu))))))
+  (let [data-size (* (:height crt) (:width crt))
+        xvals (vec (take data-size (map :x (do-cycle initial-cpu))))
 
-
-  (draw-lcd-fn crt draw-data1)
-  
-  (let [scanline (fn scanline
-                   ([x] (scanline 0 x))
-                   ([scan-x x]
-                    (let [sprite (set (map #(+ scan-x %) [-1 0 1]))
-                          pxl (if (not (nil? (sprite x)))
-                                \#
-                                \.)]
-                      (lazy-seq (cons pxl (scanline (inc scan-x) x))))))
+        data (for [y (range (:height crt))
+                   x (range (:width crt))]
+               (pixel-fn
+                [x
+                 (xvals
+                  (+ (* y (:width crt)) x))]))
         ]
-    
-    (take 10 (scanline 3)))
-  
+    (draw-lcd-fn crt data))
+  ;;  (draw-lcd-fn crt (take (* 40 6) (scanline 5)))
 
-  
   )
 
+"RBPARAGF"
 
-
+(comment "
+###..###..###...##..###...##...##..####.
+#..#.#..#.#..#.#..#.#..#.#..#.#..#.#....
+#..#.###..#..#.#..#.#..#.#..#.#....###..
+###..#..#.###..####.###..####.#.##.#....
+#.#..#..#.#....#..#.#.#..#..#.#..#.#....
+#..#.###..#....#..#.#..#.#..#..###.#....
+")
