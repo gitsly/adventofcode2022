@@ -7,19 +7,12 @@
   (:gen-class))
 
 
-(let [fn1 (fn fn1
-            ([a] a)
-            ([] nil))]
-  [(fn1 2)
-   (fn1)])
-
-
 (let [ops (let [parse-line (fn[line]
                              (let [[_ op v] (re-matches #"(.*) (-?\d*)" line)]
                                (cond v { :addx (utils/as-integer v) :op-cycles 2 }
                                      :else nil)))]
             (vec (map parse-line
-                      (utils/get-lines "resources/input_10.txt"))))
+                      (utils/get-lines "resources/input_10_full.txt"))))
 
       ;;testing
       ;;      ops [nil
@@ -79,21 +72,16 @@
                       (select-keys [:cycle :x])
                       (assoc :ss (signal-strength cpu))))
 
-      ;; 12470 (too low)
-      part1-solution (apply + 
-                            (map :ss
-                                 (map prep-data
-                                      (take 6
-                                            (take-nth 40
-                                                      (drop (dec 20) (do-cycle initial-cpu)))))))
+      ;; 12470
+      part1-solution (->> (do-cycle initial-cpu)
+                          (drop (dec 20))
+                          (take-nth 40)
+                          (take 6) ; take the firt six cycle values: 20, 60, 100 140 180 220
+                          (map prep-data)
+                          (map :ss)
+                          (apply +))
       ]
 
-  (apply + 
-         (map :ss
-              (map prep-data
-                   (take 6
-                         (take-nth 40
-                                   (drop (dec 20) (do-cycle initial-cpu)))))))
+  part1-solution)
 
 
-  )
