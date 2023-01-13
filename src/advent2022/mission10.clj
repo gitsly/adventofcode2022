@@ -112,15 +112,16 @@
   (draw-lcd-fn crt draw-data1)
   
   (let [scanline (fn scanline
-                   [scan-x x]
-                   (let [sprite (set (map #(+ scan-x %) [-1 0 1]))
-                         pxl (if (not (nil? (sprite x)))
-                               \#
-                               \.)]
-                     (lazy-seq (cons pxl (scanline (inc scan-x) x)))))
+                   ([x] (scanline 0 x))
+                   ([scan-x x]
+                    (let [sprite (set (map #(+ scan-x %) [-1 0 1]))
+                          pxl (if (not (nil? (sprite x)))
+                                \#
+                                \.)]
+                      (lazy-seq (cons pxl (scanline (inc scan-x) x))))))
         ]
     
-    (take 10 (scanline 0 3)))
+    (take 10 (scanline 3)))
   
 
   
