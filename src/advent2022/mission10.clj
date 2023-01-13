@@ -80,8 +80,18 @@
                           (map prep-data)
                           (map :ss)
                           (apply +))
+
+      crt {:width 40
+           :height 6}; You count the pixels on the CRT: 40 wide and 6 high
+
+      toprint (for [y (range (:height crt))
+                    x (range (:width crt))]
+                (char (+ (int \a)  x)))
       ]
 
-  part1-solution)
+  (doall
+   (map println  
+        (reverse (map #(apply str %) (partition (:width crt) toprint)))))
+  )
 
 
