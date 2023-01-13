@@ -84,14 +84,22 @@
       crt {:width 40
            :height 6}; You count the pixels on the CRT: 40 wide and 6 high
 
-      toprint (for [y (range (:height crt))
-                    x (range (:width crt))]
-                (char (+ (int \a)  x)))
+      pixel-fn (fn[cpu
+                   x y]
+                 nil)
+
+      draw-data1 (for [y (range (:height crt))
+                       x (range (:width crt))]
+                   (char (+ (int \a)  x)))
+
+      draw-lcd-fn (fn[crt
+                      data] (doall (map println  
+                                        (reverse (map #(apply str %) (partition (:width crt) data))))))
       ]
 
-  (doall
-   (map println  
-        (reverse (map #(apply str %) (partition (:width crt) toprint)))))
+  (draw-lcd-fn crt draw-data1)
+  
+
   )
 
 
