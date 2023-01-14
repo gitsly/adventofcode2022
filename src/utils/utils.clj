@@ -1,6 +1,7 @@
 (ns utils.utils
   (:require [clojure.java.io :as io]
-            [utils.utils :as utils]))
+            [utils.utils :as utils]
+            [clojure.string :as string]))
 
 (defn as-integer
   "Tries to convert string value to integer, if not possible, returns nil"
@@ -12,6 +13,11 @@
   [file-path]
   (line-seq
    (clojure.java.io/reader file-path)))
+
+(defn parse-int-list
+  "parse string list and returns list of integers 1,  2,  3 78 90 -12"
+  [d]
+  (map utils/as-integer (string/split d #",?\s+")))
 
 (defn dups
   "Return duplicates in sequence"
