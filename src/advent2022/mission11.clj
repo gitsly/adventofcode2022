@@ -7,13 +7,7 @@
   (:gen-class))
 
 
-(let [
-      
-      test-monkey-raw (first
-                       (partition-by #(= % "")
-                                     (utils/get-lines "resources/input_11.txt")))
-
-      parse-raw-monkey (fn[raw-monkey]
+(let [parse-raw-monkey (fn[raw-monkey]
                          (let [[id-line
                                 items-line
                                 operation-line
@@ -25,9 +19,7 @@
                                [_ op arg] (re-matches #"\s*Operation: new = old (.*) (.*)" operation-line)
                                [_ div] (re-matches #"\s*Test: divisible by (.*)" test-line)
                                [_ true-target] (re-matches #"\s*If .*: throw to monkey (.*)" test-line-true)
-                               [_ false-target] (re-matches #"\s*If .*: throw to monkey (.*)" test-line-false)
-                               
-                               ]
+                               [_ false-target] (re-matches #"\s*If .*: throw to monkey (.*)" test-line-false)]
 
                            {:id (utils/as-integer id)
                             :items (vec (utils/parse-int-list items))
@@ -37,11 +29,12 @@
                             :op {(keyword op) (utils/as-integer arg)}})
                          )
 
+      monkeys (map parse-raw-monkey
+                   (filter #(not (= % '("")))
+                           (partition-by #(= % "")
+                                         (utils/get-lines "resources/input_11.txt"))))
       ]
-  ;; (map println (parse-raw-monkey  test-monkey-raw))
 
-  (parse-raw-monkey  test-monkey-raw)
-
-  )
+  monkeys)
 
 
