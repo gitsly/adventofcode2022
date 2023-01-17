@@ -23,7 +23,8 @@
 
                            {:id (utils/as-integer id)
                             :items (vec (utils/parse-int-list items))
-                            :divisable (utils/as-integer div)
+                            :inspect-count 0 ; How many times a monkey has inspected and thrown items
+                            :divisible (utils/as-integer div)
                             :true-target (utils/as-integer true-target)
                             :false-target (utils/as-integer false-target)
                             :op {(keyword op) (utils/as-integer arg)}})
@@ -33,6 +34,7 @@
                    (filter #(not (= % '("")))
                            (partition-by #(= % "")
                                          (utils/get-lines "resources/input_11.txt"))))
+
 
       turn (fn turn []
              ;; "On a single monkey's turn, it inspects and throws all of the items it is holding one at a time and in the order listed."
@@ -47,9 +49,33 @@
              [state]
              (lazy-seq (cons (round state) (eval state))))
 
+      inspect-item (fn
+                     [monkey]
+                     (let [item (first (:items monkey))]
+                       (println "Monkey inspects an item with a worry level of" item ".")
+                       item))
       ]
+  (take 20 (eval monkeys))
 
-  (take 3 (eval monkeys))
+
+  (inspect-item (first monkeys))
+
+
   )
 
+
+
+(comment "
+Monkey 0:
+  Monkey inspects an item with a worry level of 79.
+    Worry level is multiplied by 19 to 1501.
+    Monkey gets bored with item. Worry level is divided by 3 to 500.
+    Current worry level is not divisible by 23.
+    Item with worry level 500 is thrown to monkey 3.
+  Monkey inspects an item with a worry level of 98.
+    Worry level is multiplied by 19 to 1862.
+    Monkey gets bored with item. Worry level is divided by 3 to 620.
+    Current worry level is not divisible by 23.
+    Item with worry level 620 is thrown to monkey 3.
+")
 
