@@ -33,8 +33,23 @@
                    (filter #(not (= % '("")))
                            (partition-by #(= % "")
                                          (utils/get-lines "resources/input_11.txt"))))
+
+      turn (fn turn []
+             ;; "On a single monkey's turn, it inspects and throws all of the items it is holding one at a time and in the order listed."
+             )
+
+      round (fn round
+              ;;"The process of each monkey taking a single turn is called a round."
+              [state]
+              state)
+
+      eval (fn eval
+             [state]
+             (lazy-seq (cons (round state) (eval state))))
+
       ]
 
-  monkeys)
+  (take 3 (eval monkeys))
+  )
 
 
