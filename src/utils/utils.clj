@@ -26,6 +26,11 @@
         :when (> freq 1)]            ;; this is the filter condition
     id))                              ;; just need the id, not the frequency
 
+(defn call [^String nm & args]
+  "Call a function with name in keyword or string with the supplied arguments"
+  (when-let [fun (ns-resolve *ns* (symbol nm))]
+    (apply fun args)))
+
 ;;(let [data-structure {:test 'something}]
 ;;  (binding [*print-dup* true] (prn data-structure)))
 

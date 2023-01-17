@@ -22,18 +22,19 @@
                                [_ false-target] (re-matches #"\s*If .*: throw to monkey (.*)" test-line-false)]
 
                            {:id (utils/as-integer id)
-                            :items (vec (utils/parse-int-list items))
+                            :items (utils/parse-int-list items)
                             :inspect-count 0 ; How many times a monkey has inspected and thrown items
-                            :divisible (utils/as-integer div)
+                            :div (utils/as-integer div)
                             :true-target (utils/as-integer true-target)
                             :false-target (utils/as-integer false-target)
-                            :op {(keyword op) (utils/as-integer arg)}})
+                            :op [(keyword op) (utils/as-integer arg)]})
                          )
-
       monkeys (map parse-raw-monkey
                    (filter #(not (= % '("")))
                            (partition-by #(= % "")
-                                         (utils/get-lines "resources/input_11.txt"))))
+                                         (utils/get-lines "resources/input_11.txt")))) 
+
+      monkeys (zipmap (map :id monkeys) monkeys)
 
 
       turn (fn turn []
@@ -49,18 +50,32 @@
              [state]
              (lazy-seq (cons (round state) (eval state))))
 
+      receive-item (fn [monkey
+                        item]
+                     ;; When a monkey throws an item to another monkey, the item goes on the end of the recipient monkey's list.
+                     (update monkey cons))
+
       inspect-item (fn
+                     ;; Returns new :monkey and updated :item
                      [monkey]
-                     (let [item (first (:items monkey))]
+                     (let [items (:items monkey)
+                           item (first items)
+                           [op arg] (:op monkey)
+                           wp (int (/ (utils/call op item arg) 3))]
                        (println "Monkey inspects an item with a worry level of" item ".")
-                       item))
+                       {:monkey (update monkey :items rest)
+                        :item wp
+                        :divisible (int? (/ wp (:div monkey))) 
+                        }
+                       ))
       ]
   (take 20 (eval monkeys))
 
+  (get monkeys 0)
 
-  (inspect-item (first monkeys))
+  ;;(inspect-item (:0 monkeys))
 
-
+  
   )
 
 
