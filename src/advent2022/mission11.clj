@@ -14,15 +14,15 @@
                                 test-line
                                 test-line-true
                                 test-line-false] raw-monkey
-                               [_ id] (re-matches #"Monkey (.*):" id-line)
-                               [_ items] (re-matches #"\s*Starting items: (.*)" items-line)
-                               [_ op arg] (re-matches #"\s*Operation: new = old (.*) (.*)" operation-line)
-                               [_ div] (re-matches #"\s*Test: divisible by (.*)" test-line)
-                               [_ true-target] (re-matches #"\s*If .*: throw to monkey (.*)" test-line-true)
+                               [_ id] (re-matches           #"Monkey (.*):" id-line)
+                               [_ items] (re-matches        #"\s*Starting items: (.*)" items-line)
+                               [_ op arg] (re-matches       #"\s*Operation: new = old (.*) (.*)" operation-line)
+                               [_ div] (re-matches          #"\s*Test: divisible by (.*)" test-line)
+                               [_ true-target] (re-matches  #"\s*If .*: throw to monkey (.*)" test-line-true)
                                [_ false-target] (re-matches #"\s*If .*: throw to monkey (.*)" test-line-false)]
 
                            {:id (utils/as-integer id)
-                            :items (utils/parse-int-list items)
+                            :items (vec (utils/parse-int-list items))
                             :inspect-count 0 ; How many times a monkey has inspected and thrown items
                             :div (utils/as-integer div)
                             :true-target (utils/as-integer true-target)
@@ -61,19 +61,21 @@
                      (let [items (:items monkey)
                            item (first items)
                            [op arg] (:op monkey)
-                           wp (int (/ (utils/call op item arg) 3))]
+                           wp (int (/ (utils/call op item arg) 3))
+                           divisable (int? (/ wp (:div monkey)))]
                        (println "Monkey inspects an item with a worry level of" item ".")
-                       {:monkey (update monkey :items rest)
+                       {:monkey (update monkey :items #(vec (rest %)))
                         :item wp
-                        :divisible (int? (/ wp (:div monkey))) 
-                        }
-                       ))
+                        :divisible divisable
+                        :target (if divisable
+                                  (:true-target monkey)
+                                  (:false-target monkey))}))
       ]
   (take 20 (eval monkeys))
 
-  (get monkeys 0)
+  
 
-  ;;(inspect-item (:0 monkeys))
+  (inspect-item (get monkeys 0))
 
   
   )
