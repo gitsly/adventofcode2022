@@ -37,18 +37,6 @@
       monkeys (zipmap (map :id monkeys) monkeys)
 
 
-      turn (fn turn []
-             ;; "On a single monkey's turn, it inspects and throws all of the items it is holding one at a time and in the order listed."
-             )
-
-      round (fn round
-              ;;"The process of each monkey taking a single turn is called a round."
-              [state]
-              state)
-
-      eval (fn eval
-             [state]
-             (lazy-seq (cons (round state) (eval state))))
 
       receive-item (fn [monkey
                         item]
@@ -93,10 +81,29 @@
                          (assoc-in [target] 
                                    (receive-item receiver (:item throw))))))
 
-      ]
+      turn (fn turn [state]
+             ;; "On a single monkey's turn, it inspects and throws all of the items it is holding one at a time and in the order listed."
+             (update state :turn inc))
+
+      ;; make lazy, inorder to be able to 'take x'
+      round (fn round
+              ;;"The process of each monkey taking a single turn is called a round."
+              [state]
+              (let [do-round (fn
+                               ;; Actual update of state
+                               [state]
+                               (turn state))]
+                (lazy-seq (cons state (round (do-round state))))))
+
+      start-state {:monkeys monkeys
+                   :turn 0}]
 
   
   (throw-next monkeys (get monkeys 0))
+
+  (map :turn
+       (take 3 (round start-state)))
+
 
   ;;  
   
