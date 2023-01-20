@@ -80,20 +80,23 @@
                         :item wp
                         :divisible divisable
                         :target target}))
+
+      throw-next (fn [monkeys
+                      thrower]
+                   (let [  
+                         throw    (inspect-item thrower)
+                         thrower  (:monkey throw)
+                         target   (:target throw)
+                         receiver (get monkeys target)]
+                     (-> monkeys
+                         (assoc-in [(:id thrower)] thrower)
+                         (assoc-in [target] 
+                                   (receive-item receiver (:item throw))))))
+
       ]
 
   
-
-  (let [thrower  (get monkeys 0)
-        throw    (inspect-item thrower)
-        thrower  (:monkey throw)
-        target   (:target throw)
-        receiver (get monkeys target)]
-
-    (-> monkeys
-        (assoc-in [(:id thrower)] thrower)
-        (assoc-in [target] 
-                  (receive-item receiver (:item throw)))))
+  (throw-next monkeys (get monkeys 0))
 
   ;;  
   
