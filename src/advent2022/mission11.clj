@@ -62,15 +62,24 @@
                      (let [items (:items monkey)
                            item (first items)
                            [op arg] (:op monkey)
-                           wp (int (/ (utils/call op item arg) 3))
-                           divisable (int? (/ wp (:div monkey)))]
-                       (println "Monkey inspects an item with a worry level of" item ".")
+                           tmp (utils/call op item arg)
+                           div (:div monkey)
+                           wp (int (/ tmp 3))
+                           divisable (int? (/ wp div))
+                           target (if divisable
+                                    (:true-target monkey)
+                                    (:false-target monkey))]
+                       (println "  Monkey inspects an item with a worry level of" item) 
+                       (println "    Worry level is multiplied by" arg "to" tmp ".")
+                       (println "    Monkey gets bored with item. Worry level is divided by 3 to" wp)
+                       (if divisable
+                         (println "    Current worry level is divisible by" div)
+                         (println "    Current worry level is not divisible by" div))
+                       (println "    Item with worry level" wp "is thrown to monkey" target ".") 
                        {:monkey (update monkey :items #(vec (rest %)))
                         :item wp
                         :divisible divisable
-                        :target (if divisable
-                                  (:true-target monkey)
-                                  (:false-target monkey))}))
+                        :target target}))
       ]
 
   
@@ -81,11 +90,10 @@
         target   (:target throw)
         receiver (get monkeys target)]
 
-    (println
-     (-> monkeys
-         (assoc-in [(:id thrower)] thrower)
-         (assoc-in [target] 
-                   (receive-item receiver (:item throw))))))
+    (-> monkeys
+        (assoc-in [(:id thrower)] thrower)
+        (assoc-in [target] 
+                  (receive-item receiver (:item throw)))))
 
   ;;  
   
