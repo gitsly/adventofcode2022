@@ -53,7 +53,8 @@
       receive-item (fn [monkey
                         item]
                      ;; When a monkey throws an item to another monkey, the item goes on the end of the recipient monkey's list.
-                     (update monkey cons))
+                     ;; item is worry-points (integer)
+                     (update monkey :items #(conj % item)))
 
       inspect-item (fn
                      ;; Returns new :monkey and updated :item
@@ -71,12 +72,22 @@
                                   (:true-target monkey)
                                   (:false-target monkey))}))
       ]
-  (take 20 (eval monkeys))
 
   
 
-  (inspect-item (get monkeys 0))
+  (let [thrower  (get monkeys 0)
+        throw    (inspect-item thrower)
+        thrower  (:monkey throw)
+        target   (:target throw)
+        receiver (get monkeys target)]
 
+    (println
+     (-> monkeys
+         (assoc-in [(:id thrower)] thrower)
+         (assoc-in [target] 
+                   (receive-item receiver (:item throw))))))
+
+  ;;  
   
   )
 
