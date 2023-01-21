@@ -71,8 +71,7 @@
 
       throw-next (fn [monkeys
                       thrower]
-                   (let [  
-                         throw    (inspect-item thrower)
+                   (let [throw    (inspect-item thrower)
                          thrower  (:monkey throw)
                          target   (:target throw)
                          receiver (get monkeys target)]
@@ -83,7 +82,8 @@
 
       turn (fn turn [state]
              ;; "On a single monkey's turn, it inspects and throws all of the items it is holding one at a time and in the order listed."
-             (update state :turn inc))
+             (let [monkey (:turn state)]
+               (update state :monkeys inc)))
 
       ;; make lazy, inorder to be able to 'take x'
       round (fn round
@@ -96,13 +96,21 @@
                 (lazy-seq (cons state (round (do-round state))))))
 
       start-state {:monkeys monkeys
-                   :turn 0}]
+                   :turn 0 ; active monkey
+                   }]
 
   
-  (throw-next monkeys (get monkeys 0))
 
-  (map :turn
-       (take 3 (round start-state)))
+  ;; (last 
+  ;;  (take 3 (round start-state)))
+
+  (let [state start-state
+        monkeys (:monkeys state)
+        turn (:turn state)]
+    (println
+     (apply str "Monkey " turn ":"))
+    (update state :monkeys 
+            #(throw-next % (get monkeys turn))))
 
 
   ;;  
