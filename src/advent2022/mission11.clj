@@ -106,17 +106,25 @@
 
   (let [state start-state
         monkeys (:monkeys state)
-        turn (:turn state)]
+        turn (:turn state)
+        monkey (get monkeys turn)]
     (println
      (apply str "Monkey " turn ":"))
+
     (update state :monkeys 
-            #(throw-next % (get monkeys turn))))
+            #(throw-next % monkey)))
 
 
   ;;  
   
   )
 
+
+(loop [i 0]
+  (if (< i  4)
+    (do
+      (println i)
+      (recur (inc i)))))
 
 
 (comment "
