@@ -80,10 +80,20 @@
                          (assoc-in [target] 
                                    (receive-item receiver (:item throw))))))
 
-      turn (fn turn [state]
-             ;; "On a single monkey's turn, it inspects and throws all of the items it is holding one at a time and in the order listed."
-             (let [monkey (:turn state)]
-               (update state :monkeys inc)))
+      do-turn (fn do-turn
+                [state]
+                ;; "On a single monkey's turn, it inspects and throws all of the items it is holding one at a time and in the order listed."
+                (let [turn (:turn state)]
+                  (println
+                   (apply str "Monkey " turn ":"))
+                  (loop [state state]
+                    (let [monkeys (:monkeys state)
+                          monkey (get monkeys turn)]
+                      (if (empty? (:items monkey))
+                        (update state :turn inc)
+                        (recur (update state :monkeys 
+                                       #(throw-next % monkey))))))))
+
 
       ;; make lazy, inorder to be able to 'take x'
       round (fn round
@@ -92,7 +102,7 @@
               (let [do-round (fn
                                ;; Actual update of state
                                [state]
-                               (turn state))]
+                               (do-turn state))]
                 (lazy-seq (cons state (round (do-round state))))))
 
       start-state {:monkeys monkeys
@@ -103,16 +113,8 @@
 
   ;; (last 
   ;;  (take 3 (round start-state)))
+  (do-turn start-state)
 
-  (let [state start-state
-        monkeys (:monkeys state)
-        turn (:turn state)
-        monkey (get monkeys turn)]
-    (println
-     (apply str "Monkey " turn ":"))
-
-    (update state :monkeys 
-            #(throw-next % monkey)))
 
 
   ;;  
