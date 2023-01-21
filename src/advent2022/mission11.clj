@@ -151,21 +151,11 @@
         :monkeys
         print-monkeys))
 
-  (first
-   (round start-state))
-
-  (let [monkey-count 4]
-    (loop [state start-state]
-      (if (>= (:turn state) monkey-count)
-        (update state :turn #(mod % monkey-count))
-        (recur (do-turn state)))))
-
-  (map #(->> %
-             :monkeys
-             vals
-             (map :items)) 
-       (take 3 (round start-state))))
-
-
+  (print-monkeys
+   (:monkeys
+    (first
+     (drop 10
+           (round start-state)))))
   )
+
 
