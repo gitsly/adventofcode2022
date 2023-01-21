@@ -62,6 +62,7 @@
                            target (if divisable
                                     (:true-target monkey)
                                     (:false-target monkey))]
+
                        (println "  Monkey inspects an item with a worry level of" item) 
                        (println "    Worry level is multiplied by" arg "to" tmp ".")
                        (println "    Monkey gets bored with item. Worry level is divided by 3 to" wp)
@@ -69,6 +70,7 @@
                          (println "    Current worry level is divisible by" div)
                          (println "    Current worry level is not divisible by" div))
                        (println "    Item with worry level" wp "is thrown to monkey" target ".") 
+
                        {:monkey (update monkey :items #(vec (rest %)))
                         :item wp
                         :divisible divisable
@@ -100,21 +102,6 @@
                         (recur (update state :monkeys 
                                        #(throw-next % monkey))))))))
 
-
-      ;; make lazy, inorder to be able to 'take x'
-      round (fn round
-              ;;"The process of each monkey taking a single turn is called a round."
-              [state]
-              (let [monkey-count (count (:monkeys state))
-                    do-round (fn [state]
-                               (loop [state state]
-                                 (if (>= (:turn state) monkey-count)
-                                   (update state :turn #(mod % monkey-count))
-                                   (recur (do-turn state)))))
-                    ]
-                (lazy-seq (cons state (round (do-round state))))))
-
-
       print-monkeys (fn [monkeys]
                       (loop [monkeys (vals monkeys)]
                         (let [monkey (first monkeys)]
@@ -125,11 +112,26 @@
                                (apply str "Monkey " (:id monkey) ": " (interpose "," (:items monkey))))
                               (recur (rest monkeys)))))))
 
+      ;; make lazy, inorder to be able to 'take x'
+      round (fn round
+              ;;"The process of each monkey taking a single turn is called a round."
+              [state]
+              (let [monkey-count (count (:monkeys state))
+                    do-round (fn [state2]
+                               (update 
+                                (loop [state state2]
+                                  (if (>= (:turn state) monkey-count)
+                                    (update state :turn #(mod % monkey-count))
+                                    (recur (do-turn state))))
+                                :round inc))
+                    ]
+                (lazy-seq (cons state
+                                (round (do-round state))))))
 
 
       start-state {:monkeys monkeys
                    :turn 0 ; active monkey
-                   }
+                   :round 0 }
 
 
       ]
@@ -140,15 +142,30 @@
      (take 1 (round start-state)))))
   ;;(mod (inc %) (count monkeys))
 
-  
+  (comment 
+    (-> start-state
+        do-turn
+        do-turn
+        do-turn
+        do-turn
+        :monkeys
+        print-monkeys))
+
   (first
    (round start-state))
-  
-  (-> start-state
-      do-turn
-      do-turn
-      do-turn
-      do-turn
-      :monkeys
-      print-monkeys)
+
+  (let [monkey-count 4]
+    (loop [state start-state]
+      (if (>= (:turn state) monkey-count)
+        (update state :turn #(mod % monkey-count))
+        (recur (do-turn state)))))
+
+  (map #(->> %
+             :monkeys
+             vals
+             (map :items)) 
+       (take 3 (round start-state))))
+
+
   )
+
