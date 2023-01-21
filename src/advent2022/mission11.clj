@@ -71,7 +71,11 @@
                          (println "    Current worry level is not divisible by" div))
                        (println "    Item with worry level" wp "is thrown to monkey" target ".") 
 
-                       {:monkey (update monkey :items #(vec (rest %)))
+
+
+                       {:monkey (-> monkey
+                                    (update :items #(vec (rest %)))
+                                    (update :inspect-count inc))
                         :item wp
                         :divisible divisable
                         :target target}))
@@ -110,7 +114,8 @@
                             (do
                               (println
                                (apply str "Monkey " (:id monkey) ": " (interpose "," (:items monkey))))
-                              (recur (rest monkeys)))))))
+                              (recur (rest monkeys))))))
+                      monkeys)
 
       ;; make lazy, inorder to be able to 'take x'
       round (fn round
@@ -151,11 +156,14 @@
         :monkeys
         print-monkeys))
 
-  (print-monkeys
-   (:monkeys
-    (first
-     (drop 10
-           (round start-state)))))
+
+  (map :inspect-count
+       (vals
+        (print-monkeys
+         (:monkeys
+          (first
+           (drop 10
+                 (round start-state)))))))
   )
 
 
