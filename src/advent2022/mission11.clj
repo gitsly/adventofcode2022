@@ -105,27 +105,43 @@
       round (fn round
               ;;"The process of each monkey taking a single turn is called a round."
               [state]
-              (let [do-round (fn
-                               ;; Actual update of state
-                               [state]
-                                        ; (do-turn state)
-                               state
-                               )]
+              (let [monkey-count (count (:monkeys state))
+                    do-round (fn [state]
+                               (loop [state state]
+                                 (if (>= (:turn state) monkey-count)
+                                   (update state :turn #(mod % monkey-count))
+                                   (recur (do-turn state)))))
+                    ]
                 (lazy-seq (cons state (round (do-round state))))))
+
+
+      print-monkeys (fn [monkeys]
+                      (loop [monkeys (vals monkeys)]
+                        (let [monkey (first monkeys)]
+                          (if (empty? monkeys)
+                            nil 
+                            (do
+                              (println
+                               (apply str "Monkey " (:id monkey) ": " (interpose "," (:items monkey))))
+                              (recur (rest monkeys)))))))
+
+
 
       start-state {:monkeys monkeys
                    :turn 0 ; active monkey
-                   }]
+                   }
 
-  (last
-   (take 3 (round start-state)))
+
+      ]
+  (comment
+    (print-monkeys
+     (:monkeys
+      (last
+       (take 1 (round start-state))))))
   ;;(mod (inc %) (count monkeys))
 
-  (loop [state start-state]
-    (if (>= (:turn state) 4)
-      (update state :turn #(mod % 4))
-      (recur (do-turn state))))
-
+  
+  (print-monkeys monkeys)
   
   
   )
