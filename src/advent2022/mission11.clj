@@ -63,13 +63,15 @@
                                     (:true-target monkey)
                                     (:false-target monkey))]
 
-                       (println "  Monkey inspects an item with a worry level of" item) 
-                       (println "    Worry level is multiplied by" arg "to" tmp ".")
-                       (println "    Monkey gets bored with item. Worry level is divided by 3 to" wp)
-                       (if divisable
-                         (println "    Current worry level is divisible by" div)
-                         (println "    Current worry level is not divisible by" div))
-                       (println "    Item with worry level" wp "is thrown to monkey" target ".") 
+                       (comment
+                         (println "  Monkey inspects an item with a worry level of" item) 
+                         (println "    Worry level is multiplied by" arg "to" tmp ".")
+                         (println "    Monkey gets bored with item. Worry level is divided by 3 to" wp)
+                         (if divisable
+                           (println "    Current worry level is divisible by" div)
+                           (println "    Current worry level is not divisible by" div))
+                         (println "    Item with worry level" wp "is thrown to monkey" target ".")
+                         ) 
 
 
 
@@ -95,8 +97,10 @@
                 [state]
                 ;; "On a single monkey's turn, it inspects and throws all of the items it is holding one at a time and in the order listed."
                 (let [turn (:turn state)]
-                  (println
-                   (apply str "Monkey " turn ":"))
+
+                  (comment
+                    (println
+                     (apply str "Monkey " turn ":")))
                   (loop [state state]
                     (let [monkeys (:monkeys state)
                           monkey (get monkeys turn)]
@@ -141,29 +145,23 @@
 
       ]
 
-  (vals
-   (:monkeys
-    (last
-     (take 1 (round start-state)))))
-  ;;(mod (inc %) (count monkeys))
+  (-> start-state
+      round
+      first)
 
-  (comment 
-    (-> start-state
-        do-turn
-        do-turn
-        do-turn
-        do-turn
-        :monkeys
-        print-monkeys))
+  (comment
+    (map :inspect-count
+         (vals
+          (print-monkeys
+           (:monkeys
+            (first
+             (drop 20
+                   (round start-state))))))))
 
+  (map :round
+       (take 20
+             (round start-state)))
 
-  (map :inspect-count
-       (vals
-        (print-monkeys
-         (:monkeys
-          (first
-           (drop 20
-                 (round start-state)))))))
   )
 
 
