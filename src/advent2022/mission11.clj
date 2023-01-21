@@ -133,15 +133,22 @@
 
 
       ]
-  (comment
-    (print-monkeys
-     (:monkeys
-      (last
-       (take 1 (round start-state))))))
+
+  (vals
+   (:monkeys
+    (last
+     (take 1 (round start-state)))))
   ;;(mod (inc %) (count monkeys))
 
   
-  (print-monkeys monkeys)
+  (first
+   (round start-state))
   
-  
+  (-> start-state
+      do-turn
+      do-turn
+      do-turn
+      do-turn
+      :monkeys
+      print-monkeys)
   )
