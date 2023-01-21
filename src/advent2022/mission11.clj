@@ -121,32 +121,11 @@
    (take 3 (round start-state)))
   ;;(mod (inc %) (count monkeys))
 
-  (-> start-state
-      do-turn
-      do-turn
-      do-turn
-      do-turn)
+  (loop [state start-state]
+    (if (>= (:turn state) 4)
+      (update state :turn #(mod % 4))
+      (recur (do-turn state))))
+
+  
   
   )
-
-
-(loop [i 0]
-  (if (< i  4)
-    (do
-      (println i)
-      (recur (inc i)))))
-
-
-(comment "
-Monkey 0:
-  Monkey inspects an item with a worry level of 79.
-    Worry level is multiplied by 19 to 1501.
-    Monkey gets bored with item. Worry level is divided by 3 to 500.
-    Current worry level is not divisible by 23.
-    Item with worry level 500 is thrown to monkey 3.
-  Monkey inspects an item with a worry level of 98.
-    Worry level is multiplied by 19 to 1862.
-    Monkey gets bored with item. Worry level is divided by 3 to 620.
-    Current worry level is not divisible by 23.
-    Item with worry level 620 is thrown to monkey 3.
-")
