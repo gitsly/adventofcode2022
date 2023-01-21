@@ -90,7 +90,7 @@
                     (let [monkeys (:monkeys state)
                           monkey (get monkeys turn)]
                       (if (empty? (:items monkey))
-                        (update state :turn inc)
+                        (update state :turn #(mod (inc %) (count monkeys)))
                         (recur (update state :monkeys 
                                        #(throw-next % monkey))))))))
 
