@@ -27,7 +27,9 @@
                             :div (utils/as-integer div)
                             :true-target (utils/as-integer true-target)
                             :false-target (utils/as-integer false-target)
-                            :op [(keyword op) (utils/as-integer arg)]})
+                            :op [(keyword op)
+                                 (utils/as-integer arg) ; Note. if 'old' as string then this will be nil, checked in calc func later
+                                 ]})
                          )
       monkeys (map parse-raw-monkey
                    (filter #(not (= % '("")))
@@ -50,6 +52,9 @@
                      (let [items (:items monkey)
                            item (first items)
                            [op arg] (:op monkey)
+                           arg (if arg
+                                 arg
+                                 item)
                            tmp (utils/call op item arg)
                            div (:div monkey)
                            wp (int (/ tmp 3))
@@ -90,7 +95,8 @@
                     (let [monkeys (:monkeys state)
                           monkey (get monkeys turn)]
                       (if (empty? (:items monkey))
-                        (update state :turn #(mod (inc %) (count monkeys)))
+                        (update state :turn inc) ; Next monkey's turn...
+                        ;; Otherwise, throw next item.
                         (recur (update state :monkeys 
                                        #(throw-next % monkey))))))))
 
@@ -102,22 +108,24 @@
               (let [do-round (fn
                                ;; Actual update of state
                                [state]
-                               (do-turn state))]
+                                        ; (do-turn state)
+                               state
+                               )]
                 (lazy-seq (cons state (round (do-round state))))))
 
       start-state {:monkeys monkeys
                    :turn 0 ; active monkey
                    }]
 
-  
+  (last
+   (take 3 (round start-state)))
+  ;;(mod (inc %) (count monkeys))
 
-  ;; (last 
-  ;;  (take 3 (round start-state)))
-  (do-turn start-state)
-
-
-
-  ;;  
+  (-> start-state
+      do-turn
+      do-turn
+      do-turn
+      do-turn)
   
   )
 
@@ -142,4 +150,3 @@ Monkey 0:
     Current worry level is not divisible by 23.
     Item with worry level 620 is thrown to monkey 3.
 ")
-
