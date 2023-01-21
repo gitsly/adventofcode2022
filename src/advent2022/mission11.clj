@@ -34,7 +34,7 @@
       monkeys (map parse-raw-monkey
                    (filter #(not (= % '("")))
                            (partition-by #(= % "")
-                                         (utils/get-lines "resources/input_11.txt")))) 
+                                         (utils/get-lines "resources/input11_full.txt")))) 
 
       monkeys (zipmap (map :id monkeys) monkeys)
 
@@ -162,7 +162,7 @@
         (print-monkeys
          (:monkeys
           (first
-           (drop 10
+           (drop 20
                  (round start-state)))))))
   )
 
