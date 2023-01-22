@@ -60,7 +60,6 @@
                                  item)
                            wp (utils/call op (bigint item) (bigint arg))
                            div (:div monkey)
-                           ;;wp  (bigint (/ tmp 3))
                            divisable (utils/divisable? wp div)
                            target (if divisable
                                     (:true-target monkey)
@@ -161,7 +160,7 @@
   ;; 123895 -> Too high
 
   (let [rounds 10000
-        rounds 20
+        rounds 1000
 
         end-state (first
                    (drop rounds
