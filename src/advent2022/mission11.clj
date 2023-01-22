@@ -33,8 +33,8 @@
                                  ]})
                          )
 
-      file "resources/input11_full.txt"
       file "resources/input_11.txt"
+      file "resources/input11_full.txt"
 
       monkeys (map parse-raw-monkey
                    (filter #(not (= % '("")))
@@ -169,4 +169,6 @@
         monkey-business (apply * (map :inspect-count top-two-monkeys))
         ] 
 
-    monkey-business))
+    (print-monkeys (:monkeys end-state))
+
+    (println "Monkey business:" monkey-business)))
