@@ -33,8 +33,8 @@
                                  ]})
                          )
 
-      file "resources/input_11.txt"
       file "resources/input11_full.txt"
+      file "resources/input_11.txt"  ; 10605
 
       monkeys (map parse-raw-monkey
                    (filter #(not (= % '("")))
@@ -42,8 +42,6 @@
                                          (utils/get-lines file)))) 
 
       monkeys (zipmap (map :id monkeys) monkeys)
-
-
 
       receive-item (fn [monkey
                         item]
@@ -60,9 +58,8 @@
                            arg (if arg
                                  arg
                                  item)
-                           tmp (utils/call op (bigint item) (bigint arg))
+                           tmp (utils/call op item arg)
                            div (:div monkey)
-                           ;;                           dbg (println "tmp:" tmp ", item:" item ", arg:" arg ", op" op); Problem below, int will overflow, bigint is not giving correct results
                            wp  (bigint (/ tmp 3))
                            divisable (utils/divisable? wp div)
                            target (if divisable
@@ -116,16 +113,25 @@
                         (recur (update state :monkeys 
                                        #(throw-next % monkey))))))))
 
+
+      seq-monkeys (fn [monkeys
+                       seq-fn]
+                    (loop [monkeys (vals monkeys)]
+                      (let [monkey (first monkeys)]
+                        (if (empty? monkeys)
+                          nil 
+                          (do
+                            (seq-fn monkey)
+                            (recur (rest monkeys))))))
+                    monkeys)
+
       print-monkeys (fn [monkeys]
-                      (loop [monkeys (vals monkeys)]
-                        (let [monkey (first monkeys)]
-                          (if (empty? monkeys)
-                            nil 
-                            (do
-                              (println
-                               (apply str "Monkey " (:id monkey) ": " (interpose "," (:items monkey))))
-                              (recur (rest monkeys))))))
-                      monkeys)
+                      (seq-monkeys monkeys (fn [monkey]
+                                             (println (apply str "Monkey " (:id monkey) ": " (interpose "," (:items monkey)))))))
+
+      print-monkeys-inspect (fn [monkeys]
+                              (seq-monkeys monkeys (fn [monkey]
+                                                     (println (apply str "Monkey " (:inspect-count monkey))))))
 
       ;; make lazy, inorder to be able to 'take x'
       round (fn round
@@ -154,8 +160,12 @@
 
   ;; 123895 -> Too high
 
-  (let [end-state (first
-                   (drop 20
+  (let [
+        rounds 10000
+        rounds 20
+
+        end-state (first
+                   (drop rounds
                          (round start-state)))
 
 
@@ -166,9 +176,13 @@
 
         top-two-monkeys (take 2 (reverse (sort-by #(:inspect-count %) end-monkeys)))
 
-        monkey-business (apply * (map :inspect-count top-two-monkeys))
+        monkey-business (apply * (map :inspect-count top-two-monkeys)) ;Your puzzle answer was 100345.
         ] 
 
     (print-monkeys (:monkeys end-state))
 
-    (println "Monkey business:" monkey-business)))
+    (println "Monkey business:" monkey-business)
+
+    monkey-business)
+  )
+
