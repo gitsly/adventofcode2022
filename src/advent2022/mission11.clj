@@ -157,7 +157,7 @@
                    :turn 0 ; active monkey
                    :round 0 }]
 
-  (let [round-count 100
+  (let [round-count 1000
         end-state (round start-state round-count)
 
 
@@ -173,6 +173,5 @@
     (time
      (print-monkeys-inspect (:monkeys end-state))))
   )
-
 
 
