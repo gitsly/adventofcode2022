@@ -7,6 +7,7 @@
   (:gen-class))
 
 
+
 (let [parse-raw-monkey (fn[raw-monkey]
                          (let [[id-line
                                 items-line
@@ -31,10 +32,14 @@
                                  (utils/as-integer arg) ; Note. if 'old' as string then this will be nil, checked in calc func later
                                  ]})
                          )
+
+      file "resources/input11_full.txt"
+      file "resources/input_11.txt"
+
       monkeys (map parse-raw-monkey
                    (filter #(not (= % '("")))
                            (partition-by #(= % "")
-                                         (utils/get-lines "resources/input11_full.txt")))) 
+                                         (utils/get-lines file)))) 
 
       monkeys (zipmap (map :id monkeys) monkeys)
 
@@ -55,10 +60,11 @@
                            arg (if arg
                                  arg
                                  item)
-                           tmp (utils/call op item arg)
+                           tmp (utils/call op (bigint item) (bigint arg))
                            div (:div monkey)
-                           wp (int (/ tmp 3))
-                           divisable (int? (/ wp div))
+                           ;;                           dbg (println "tmp:" tmp ", item:" item ", arg:" arg ", op" op); Problem below, int will overflow, bigint is not giving correct results
+                           wp  (bigint (/ tmp 3))
+                           divisable (utils/divisable? wp div)
                            target (if divisable
                                     (:true-target monkey)
                                     (:false-target monkey))]
@@ -126,9 +132,9 @@
               ;;"The process of each monkey taking a single turn is called a round."
               [state]
               (let [monkey-count (count (:monkeys state))
-                    do-round (fn [state2]
+                    do-round (fn [state]
                                (update 
-                                (loop [state state2]
+                                (loop [state state]
                                   (if (>= (:turn state) monkey-count)
                                     (update state :turn #(mod % monkey-count))
                                     (recur (do-turn state))))
@@ -145,23 +151,22 @@
 
       ]
 
-  (-> start-state
-      round
-      first)
 
-  (comment
-    (map :inspect-count
-         (vals
-          (print-monkeys
-           (:monkeys
-            (first
-             (drop 20
-                   (round start-state))))))))
+  ;; 123895 -> Too high
 
-  (map :round
-       (take 20
-             (round start-state)))
-
-  )
+  (let [end-state (first
+                   (drop 20
+                         (round start-state)))
 
 
+        end-monkeys (map #(select-keys % [:id
+                                          :inspect-count
+                                          :items])
+                         (vals (:monkeys end-state)))
+
+        top-two-monkeys (take 2 (reverse (sort-by #(:inspect-count %) end-monkeys)))
+
+        monkey-business (apply * (map :inspect-count top-two-monkeys))
+        ] 
+
+    monkey-business))
