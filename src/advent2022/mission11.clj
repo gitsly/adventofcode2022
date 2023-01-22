@@ -58,9 +58,9 @@
                            arg (if arg
                                  arg
                                  item)
-                           tmp (utils/call op item arg)
+                           wp (utils/call op (bigint item) (bigint arg))
                            div (:div monkey)
-                           wp  (bigint (/ tmp 3))
+                           ;;wp  (bigint (/ tmp 3))
                            divisable (utils/divisable? wp div)
                            target (if divisable
                                     (:true-target monkey)
@@ -131,7 +131,7 @@
 
       print-monkeys-inspect (fn [monkeys]
                               (seq-monkeys monkeys (fn [monkey]
-                                                     (println (apply str "Monkey " (:inspect-count monkey))))))
+                                                     (println "Monkey" (:id monkey) "inspected items"(:inspect-count monkey) "times."))))
 
       ;; make lazy, inorder to be able to 'take x'
       round (fn round
@@ -160,8 +160,7 @@
 
   ;; 123895 -> Too high
 
-  (let [
-        rounds 10000
+  (let [rounds 10000
         rounds 20
 
         end-state (first
@@ -179,10 +178,6 @@
         monkey-business (apply * (map :inspect-count top-two-monkeys)) ;Your puzzle answer was 100345.
         ] 
 
-    (print-monkeys (:monkeys end-state))
-
-    (println "Monkey business:" monkey-business)
-
-    monkey-business)
+    (print-monkeys-inspect (:monkeys end-state)))
   )
 
