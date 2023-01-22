@@ -6,8 +6,6 @@
             [clojure.walk :as walk])
   (:gen-class))
 
-
-
 (let [parse-raw-monkey (fn[raw-monkey]
                          (let [[id-line
                                 items-line
@@ -60,8 +58,8 @@
                                  item)
                            wp (utils/call op (bigint item) (bigint arg))
                            div (:div monkey)
-                           divisable (utils/divisable? wp div)
-                           target (if divisable
+                           divisible (utils/divisible? wp div)
+                           target (if divisible
                                     (:true-target monkey)
                                     (:false-target monkey))]
 
@@ -69,7 +67,7 @@
                          (println "  Monkey inspects an item with a worry level of" item) 
                          (println "    Worry level is multiplied by" arg "to" tmp ".")
                          (println "    Monkey gets bored with item. Worry level is divided by 3 to" wp)
-                         (if divisable
+                         (if divisible
                            (println "    Current worry level is divisible by" div)
                            (println "    Current worry level is not divisible by" div))
                          (println "    Item with worry level" wp "is thrown to monkey" target ".")
@@ -80,8 +78,10 @@
                        {:monkey (-> monkey
                                     (update :items #(vec (rest %)))
                                     (update :inspect-count inc))
-                        :item wp
-                        :divisible divisable
+                        :item (if divisible
+                                (bigint (/ wp div))
+                                wp)
+                        :divisible divisible
                         :target target}))
 
       throw-next (fn [monkeys
@@ -171,7 +171,27 @@
         monkey-business (apply * (map :inspect-count top-two-monkeys)) ;Your puzzle answer was 100345.
         ] 
     (time
-     (print-monkeys-inspect (:monkeys end-state))))
+     (print-monkeys-inspect
+      (:monkeys end-state))))
   )
 
+;; There is only + and * in operations... (steadily increasing worry level...)
+(let [seq [(* 79 19) ; 1501 (divisable by 23) => monkey 3
+           (utils/divisible? 1501 23)
+
+           ;; Monkey 3 turn
+           ;; items: 67, 75, 91, 72, 89, 400
+           (+ 67 4) ; 71 (not divisable by 11) -> monkey 3
+           ;; ...
+           (+ 400 4) ; 404 ()
+
+
+           ]
+
+
+      ]
+
+  seq )
+
+(/ 71 11)
 

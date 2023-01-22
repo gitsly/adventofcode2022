@@ -26,7 +26,7 @@
         :when (> freq 1)]            ;; this is the filter condition
     id))                              ;; just need the id, not the frequency
 
-(defn divisable?
+(defn divisible?
   [n d]
   (zero? (mod n d)))
 
