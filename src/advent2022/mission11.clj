@@ -135,36 +135,30 @@
       ;; make lazy, inorder to be able to 'take x'
       round (fn round
               ;;"The process of each monkey taking a single turn is called a round."
-              [state]
+              [state
+               round-count]
               (let [monkey-count (count (:monkeys state))
                     do-round (fn [state]
                                (update 
-                                (loop [state state]
+                                (loop [state state] ; Loop and perform each monkey's business (inspect all items)
                                   (if (>= (:turn state) monkey-count)
                                     (update state :turn #(mod % monkey-count))
                                     (recur (do-turn state))))
-                                :round inc))
-                    ]
-                (lazy-seq (cons state
-                                (round (do-round state))))))
+                                :round inc))]
+                (loop [round 0
+                       state state]
+                  (if (>= round round-count)
+                    state
+                    (recur (inc round)
+                           (do-round state))))))
 
 
       start-state {:monkeys monkeys
                    :turn 0 ; active monkey
-                   :round 0 }
+                   :round 0 }]
 
-
-      ]
-
-
-  ;; 123895 -> Too high
-
-  (let [rounds 10000
-        rounds 1000
-
-        end-state (first
-                   (drop rounds
-                         (round start-state)))
+  (let [round-count 100
+        end-state (round start-state round-count)
 
 
         end-monkeys (map #(select-keys % [:id
@@ -176,7 +170,9 @@
 
         monkey-business (apply * (map :inspect-count top-two-monkeys)) ;Your puzzle answer was 100345.
         ] 
-
-    (print-monkeys-inspect (:monkeys end-state)))
+    (time
+     (print-monkeys-inspect (:monkeys end-state))))
   )
+
+
 
