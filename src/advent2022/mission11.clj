@@ -43,6 +43,9 @@
 
       monkeys (zipmap (map :id monkeys) monkeys)
 
+      least-common-multiplier (reduce utils/lcm 
+                                      (map :div (-> monkeys vals)))
+
       receive-item (fn [monkey
                         item]
                      ;; When a monkey throws an item to another monkey, the item goes on the end of the recipient monkey's list.
@@ -60,7 +63,7 @@
                                  item)
                            tmp (utils/call op (bigint item) (bigint arg))
                            div (:div monkey)
-                           wp  (bigint (/ tmp 3))
+                           wp  (mod (bigint (/ tmp 3)) least-common-multiplier)
                            divisible (utils/divisible? wp div)
                            target (if divisible
                                     (:true-target monkey)
@@ -182,8 +185,9 @@
     ;;     (print-monkeys-inspect
     ;;      (:monkeys end-state))))
 
-    (print-monkeys (:monkeys end-state))
-    monkey-business))
+    ;;least-common-multiplier
+    monkey-business
+    ))
 
 
 ;; https://rosettacode.org/wiki/Least_common_multiple
