@@ -6,6 +6,8 @@
             [clojure.walk :as walk])
   (:gen-class))
 
+
+
 (let [parse-raw-monkey (fn[raw-monkey]
                          (let [[id-line
                                 items-line
@@ -32,7 +34,7 @@
                          )
 
       file "resources/input11_full.txt"
-      file "resources/input_11.txt"  ; 10605
+      file "resources/input_11.txt"  ; 10605 (Part I)
 
       monkeys (map parse-raw-monkey
                    (filter #(not (= % '("")))
@@ -56,8 +58,9 @@
                            arg (if arg
                                  arg
                                  item)
-                           wp (utils/call op (bigint item) (bigint arg))
+                           tmp (utils/call op (bigint item) (bigint arg))
                            div (:div monkey)
+                           wp  (bigint (/ tmp 3))
                            divisible (utils/divisible? wp div)
                            target (if divisible
                                     (:true-target monkey)
@@ -70,20 +73,15 @@
                          (if divisible
                            (println "    Current worry level is divisible by" div)
                            (println "    Current worry level is not divisible by" div))
-                         (println "    Item with worry level" wp "is thrown to monkey" target ".")
-                         ) 
+                         (println "    Item with worry level" wp "is thrown to monkey" target "."))
+                       
 
 
 
                        {:monkey (-> monkey
                                     (update :items #(vec (rest %)))
                                     (update :inspect-count inc))
-
-                        :item-fail (if divisible
-                                     (bigint (/ wp div))
-                                     (bigint (mod wp div)))
                         :item wp
-
                         :divisible divisible
                         :target target}))
 
@@ -100,7 +98,9 @@
 
       do-turn (fn do-turn
                 [state]
-                ;; "On a single monkey's turn, it inspects and throws all of the items it is holding one at a time and in the order listed."
+                ;; "On a single monkey's turn, it inspects and throws
+                ;; all of the items it is holding one at a time and in
+                ;; the order listed."
                 (let [turn (:turn state)]
 
                   (comment
@@ -128,12 +128,17 @@
                     monkeys)
 
       print-monkeys (fn [monkeys]
-                      (seq-monkeys monkeys (fn [monkey]
-                                             (println (apply str "Monkey " (:id monkey) ": " (interpose "," (:items monkey)))))))
+                      (seq-monkeys monkeys
+                                   (fn [monkey]
+                                     (println
+                                      (apply str "Monkey " (:id monkey) ": " (interpose "," (:items monkey)))))))
 
       print-monkeys-inspect (fn [monkeys]
-                              (seq-monkeys monkeys (fn [monkey]
-                                                     (println "Monkey" (:id monkey) "inspected items"(:inspect-count monkey) "times."))))
+                              (seq-monkeys monkeys
+                                           (fn [monkey]
+                                             (println "Monkey" (:id monkey)
+                                                      "inspected items"(:inspect-count monkey)
+                                                      "times."))))
 
       ;; make lazy, inorder to be able to 'take x'
       round (fn round
@@ -171,12 +176,14 @@
 
         top-two-monkeys (take 2 (reverse (sort-by #(:inspect-count %) end-monkeys)))
 
-        monkey-business (apply * (map :inspect-count top-two-monkeys)) ;Your puzzle answer was 100345.
+        monkey-business (apply * (map :inspect-count top-two-monkeys)) ;Your puzzle answer was 100345 (Part I).
         ] 
     ;;    (time
     ;;     (print-monkeys-inspect
     ;;      (:monkeys end-state))))
-    nil))
+
+    (print-monkeys (:monkeys end-state))
+    monkey-business))
 
 
 ;; https://rosettacode.org/wiki/Least_common_multiple
