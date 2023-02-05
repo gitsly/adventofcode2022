@@ -78,9 +78,12 @@
                        {:monkey (-> monkey
                                     (update :items #(vec (rest %)))
                                     (update :inspect-count inc))
-                        :item (if divisible
-                                (bigint (/ wp div))
-                                wp)
+
+                        :item-fail (if divisible
+                                     (bigint (/ wp div))
+                                     (bigint (mod wp div)))
+                        :item wp
+
                         :divisible divisible
                         :target target}))
 
@@ -157,7 +160,7 @@
                    :turn 0 ; active monkey
                    :round 0 }]
 
-  (let [round-count 1000
+  (let [round-count 20
         end-state (round start-state round-count)
 
 
@@ -170,10 +173,43 @@
 
         monkey-business (apply * (map :inspect-count top-two-monkeys)) ;Your puzzle answer was 100345.
         ] 
-    (time
-     (print-monkeys-inspect
-      (:monkeys end-state))))
-  )
+    ;;    (time
+    ;;     (print-monkeys-inspect
+    ;;      (:monkeys end-state))))
+    nil))
+
+
+;; https://rosettacode.org/wiki/Least_common_multiple
+(let [divs [23 19 13 17]
+      lcm (reduce utils/lcm [23 19 13 17]) ; 96577
+
+      ]
+  ;; Divisors for monkeys: Analyze if there is a multiplier than can be
+  ;; used to divide the worry level after each transfer
+  {:divisions divs
+   :test-divisions (map #(/ lcm %) divs)
+   :lowest-common-multipler lcm })
+;; All these are even divisable with the 'lcm' So it seems like we should be able to 'mod' the worry result before sending to next monkey
+
+
+(utils/lcm 23 19) ; 437
+(utils/lcm 19 13) ; 247
+(utils/lcm 13 17) ; 221 
+(utils/lcm 23 17) ; 391 
+
+(utils/lcm 437 247) ; 5681
+
+
+(map
+ (fn[wp]
+   {:in wp
+    :div (utils/divisible? wp 23)
+    :out (* wp 19) 
+    }) [79 98])
+
+
+
+
 
 ;; There is only + and * in operations... (steadily increasing worry level...)
 (let [seq [(* 79 19) ; 1501 (divisable by 23) => monkey 3

@@ -36,6 +36,28 @@
   (when-let [fun (ns-resolve *ns* (symbol nm))]
     (apply fun args)))
 
+
+;; Some MATH utils
+;;----------------------------
+(defn gcdp
+  [a, b]
+  (if (zero? b)
+    a
+    (gcdp b (mod a b))))
+
+(defn gcd
+  "Greatest common divisor"
+  [a, b]
+  (gcdp (abs a) (abs b)))
+
+(defn lcm
+  "Least common multiplier"
+  [a, b]
+  (/ 
+   (abs (* a b))
+   (gcd a b)))
+
+
 ;;(let [data-structure {:test 'something}]
 ;;  (binding [*print-dup* true] (prn data-structure)))
 
