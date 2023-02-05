@@ -33,8 +33,9 @@
                                  ]})
                          )
 
-      file "resources/input11_full.txt" ;Your puzzle answer was 100345 (Part I).
+
       file "resources/input_11.txt"  ; 10605 (Part I)
+      file "resources/input11_full.txt" ;Your puzzle answer was 100345 (Part I).
 
       monkeys (map parse-raw-monkey
                    (filter #(not (= % '("")))
@@ -174,7 +175,7 @@
 
   (let [round-count 20
 
-        round-count 1000
+        round-count 10000
 
         end-state (round start-state round-count)
 
@@ -190,62 +191,9 @@
         ] 
     (time
      (print-monkeys-inspect
-      (:monkeys end-state))))
+      (:monkeys end-state)))
 
-  ;;least-common-multiplier
-  ;;monkey-business
-  ))
-
-
-;; https://rosettacode.org/wiki/Least_common_multiple
-(let [divs [23 19 13 17]
-      lcm (reduce utils/lcm [23 19 13 17]) ; 96577
-
-      ]
-;; Divisors for monkeys: Analyze if there is a multiplier than can be
-;; used to divide the worry level after each transfer
-{:divisions divs
- :test-divisions (map #(/ lcm %) divs)
- :lowest-common-multipler lcm })
-;; All these are even divisable with the 'lcm' So it seems like we should be able to 'mod' the worry result before sending to next monkey
-
-
-(utils/lcm 23 19) ; 437
-(utils/lcm 19 13) ; 247
-(utils/lcm 13 17) ; 221 
-(utils/lcm 23 17) ; 391 
-
-(utils/lcm 437 247) ; 5681
-
-
-(map
- (fn[wp]
-   {:in wp
-    :div (utils/divisible? wp 23)
-    :out (* wp 19) 
-    }) [79 98])
-
-
-
-
-
-;; There is only + and * in operations... (steadily increasing worry level...)
-(let [seq [(* 79 19) ; 1501 (divisable by 23) => monkey 3
-           (utils/divisible? 1501 23)
-
-           ;; Monkey 3 turn
-           ;; items: 67, 75, 91, 72, 89, 400
-           (+ 67 4) ; 71 (not divisable by 11) -> monkey 3
-           ;; ...
-           (+ 400 4) ; 404 ()
-
-
-           ]
-
-
-      ]
-
-  seq )
-
-(/ 71 11)
+    ;; Part II: 28537348205
+    (println monkey-business)))
+  
 
