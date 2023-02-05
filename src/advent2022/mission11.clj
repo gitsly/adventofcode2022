@@ -33,7 +33,7 @@
                                  ]})
                          )
 
-      file "resources/input11_full.txt"
+      file "resources/input11_full.txt" ;Your puzzle answer was 100345 (Part I).
       file "resources/input_11.txt"  ; 10605 (Part I)
 
       monkeys (map parse-raw-monkey
@@ -63,7 +63,11 @@
                                  item)
                            tmp (utils/call op (bigint item) (bigint arg))
                            div (:div monkey)
-                           wp  (mod (bigint (/ tmp 3)) least-common-multiplier)
+
+                           ;;wp  (mod (bigint (/ tmp 3)) least-common-multiplier) ; Part I
+
+                           wp  (mod tmp least-common-multiplier) ; Part I
+
                            divisible (utils/divisible? wp div)
                            target (if divisible
                                     (:true-target monkey)
@@ -169,6 +173,9 @@
                    :round 0 }]
 
   (let [round-count 20
+
+        round-count 1000
+
         end-state (round start-state round-count)
 
 
@@ -179,15 +186,15 @@
 
         top-two-monkeys (take 2 (reverse (sort-by #(:inspect-count %) end-monkeys)))
 
-        monkey-business (apply * (map :inspect-count top-two-monkeys)) ;Your puzzle answer was 100345 (Part I).
+        monkey-business (apply * (map :inspect-count top-two-monkeys)) 
         ] 
-    ;;    (time
-    ;;     (print-monkeys-inspect
-    ;;      (:monkeys end-state))))
+    (time
+     (print-monkeys-inspect
+      (:monkeys end-state))))
 
-    ;;least-common-multiplier
-    monkey-business
-    ))
+  ;;least-common-multiplier
+  ;;monkey-business
+  ))
 
 
 ;; https://rosettacode.org/wiki/Least_common_multiple
@@ -195,11 +202,11 @@
       lcm (reduce utils/lcm [23 19 13 17]) ; 96577
 
       ]
-  ;; Divisors for monkeys: Analyze if there is a multiplier than can be
-  ;; used to divide the worry level after each transfer
-  {:divisions divs
-   :test-divisions (map #(/ lcm %) divs)
-   :lowest-common-multipler lcm })
+;; Divisors for monkeys: Analyze if there is a multiplier than can be
+;; used to divide the worry level after each transfer
+{:divisions divs
+ :test-divisions (map #(/ lcm %) divs)
+ :lowest-common-multipler lcm })
 ;; All these are even divisable with the 'lcm' So it seems like we should be able to 'mod' the worry result before sending to next monkey
 
 
